@@ -1,0 +1,74 @@
+# ══════════════════════════════════════════════
+# اردو پروگرامنگ لینگویج — .gitignore
+# ══════════════════════════════════════════════
+
+# ─── Build output ─────────────────────────────
+dist/
+build/
+build_env/
+*.spec
+*.gguf
+
+# ─── Python bytecode ──────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# ─── Compiled Urdu files ──────────────────────
+*.urduc
+
+# ─── Temporary test files ─────────────────────
+_tmp_*.urdu
+_tmp_*.urduc
+docs/_test_*.urdu
+docs/_test_*.urduc
+docs/_tmp_*.urdu
+docs/_tmp_*.urduc
+
+# ─── Databases created during testing ─────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Python packaging artifacts ───────────────
+*.egg-info/
+*.egg
+.eggs/
+dist/
+wheels/
+pip-wheel-metadata/
+MANIFEST
+
+# ─── Virtual environments ─────────────────────
+venv/
+.venv/
+env/
+.env/
+build_env/
+
+# ─── IDE and editor files ─────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── Logs and temp output ─────────────────────
+*.log
+لاگز/
+
+# ─── Claude Code internal files ───────────────
+.claude/
+
+# ─── Secrets / credentials ────────────────────
+.env
+*.key
+serviceAccountKey.json
+encryption.key
+examples/*.json
+examples/*.csv
+examples/*.xlsx
+examples/*.zip

@@ -1,0 +1,53 @@
+# ══════════════════════════════════════════════
+# اردو پروگرامنگ لینگویج — ضروریات
+# Urdu Programming Language — Requirements
+# ══════════════════════════════════════════════
+
+# ─── Core (required) ─────────────────────────
+# Python 3.9+ — no extra core dependencies
+
+# ─── GUI (optional) ──────────────────────────
+# tkinter is built-in with Python
+
+# ─── Databases ───────────────────────────────
+# mysql-connector-python    # MySQL
+# pymysql                   # MySQL (pure-Python alternative)
+# psycopg2-binary           # PostgreSQL
+# pymongo                   # MongoDB
+# firebase-admin            # Firebase / Firestore
+# cassandra-driver          # Apache Cassandra
+
+# ─── Web Frameworks ──────────────────────────
+# fastapi                   # FastAPI
+# uvicorn[standard]         # ASGI server for FastAPI
+# flask                     # Flask
+# django                    # Django
+# aiohttp                   # Async HTTP client
+# requests                  # HTTP client (sync)
+# websockets                # WebSocket support
+# python-socketio           # Socket.IO server
+# python-engineio           # Engine.IO server (dependency of python-socketio)
+
+# ─── Security / Auth ─────────────────────────
+# python-jose[cryptography] # JWT tokens
+# cryptography              # Cryptographic primitives
+# pycryptodome              # PyCryptodome (installed as Crypto)
+
+# ─── Machine Learning ────────────────────────
+# tensorflow                # TensorFlow + Keras
+# scikit-learn              # ML algorithms
+# numpy                     # Numerical computing
+# pandas                    # Data analysis
+# matplotlib                # Plotting
+
+# ─── LLM Support ─────────────────────────────
+# llama-cpp-python          # Local LLM inference (llama.cpp)
+
+# ─── Install all optional dependencies ───────
+# pip install urdu-lang[all]
+#
+# or individually:
+# pip install urdu-lang[mysql]
+# pip install urdu-lang[fastapi]
+# pip install urdu-lang[ml]
+# pip install urdu-lang[llm]
