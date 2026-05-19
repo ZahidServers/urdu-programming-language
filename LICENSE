@@ -1,0 +1,119 @@
+Urdu Programming Language License (UPL-1.0)
+============================================
+
+Copyright (c) 2024 Mohammed Zahid Wadiwale
+All rights reserved.
+
+Original Author: Mohammed Zahid Wadiwale
+Contact: zahid.wadiwale1234@gmail.com
+Repository: https://github.com/zahid-wadiwale/urdu-lang
+
+
+════════════════════════════════════════════════════════════════
+PART 1 — PROGRAMS WRITTEN IN THE URDU PROGRAMMING LANGUAGE
+════════════════════════════════════════════════════════════════
+
+Programs, applications, scripts, and software that you CREATE
+using the Urdu Programming Language are entirely your own work.
+
+You are free to:
+  - Use, copy, modify, and distribute your programs
+  - Sell your programs commercially or offer them for free
+  - Release your programs as open source or keep them proprietary
+  - Include your programs in other projects without restriction
+  - Choose any license for your own programs
+
+No attribution to Mohammed Zahid Wadiwale or to this project is
+required for software you build using this language. Your work
+is yours, with no strings attached.
+
+
+════════════════════════════════════════════════════════════════
+PART 2 — THE LANGUAGE ITSELF (THIS REPOSITORY'S SOURCE CODE)
+════════════════════════════════════════════════════════════════
+
+The source code of the Urdu Programming Language — including the
+lexer, parser, transpiler, runtime, standard library modules,
+documentation, and all other files in this repository — is
+covered by the following terms:
+
+1. ATTRIBUTION REQUIREMENT
+   Any fork, derivative work, modified version, or product based
+   on this repository's source code must clearly credit:
+
+       Original Author: Mohammed Zahid Wadiwale
+       Original Project: Urdu Programming Language
+       Source: https://github.com/zahid-wadiwale/urdu-lang
+
+   This credit must appear in:
+     (a) the source repository's README or equivalent documentation
+     (b) any public release, package, or distribution of the
+         derivative work
+     (c) any user-facing "about" or "version" output, if present
+
+2. CONTRIBUTIONS
+   Contributions to this repository are welcome. By submitting a
+   contribution (pull request, patch, or otherwise), you agree
+   that your contribution will be included under this license.
+   Contributor credit will be maintained in the project's
+   contributor records (e.g., git history, CONTRIBUTORS file).
+   The original authorship of Mohammed Zahid Wadiwale must remain
+   acknowledged in all versions that include your contribution.
+
+3. NO MISREPRESENTATION
+   You may not claim that you created the original Urdu
+   Programming Language or remove, obscure, or alter any
+   attribution notices identifying Mohammed Zahid Wadiwale as the
+   original author.
+
+4. PERMITTED USES (LANGUAGE SOURCE)
+   Subject to the attribution requirement above, you are permitted
+   to:
+     - Study, read, and learn from this source code
+     - Fork and modify the language for personal or educational use
+     - Create and publish a derivative language or tool, provided
+       attribution is given as described above
+     - Contribute improvements back to the original project
+
+5. DISTRIBUTION OF DERIVATIVE LANGUAGES
+   If you distribute a modified version of this language (source
+   or binary), you must:
+     (a) State clearly that your version is a modification
+     (b) Retain the attribution notice in Part 2, Section 1
+     (c) Not use the name "Urdu Programming Language" as the sole
+         name for your fork in a way that could cause confusion
+         with this original project
+
+6. DISCLAIMER OF WARRANTY
+   THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+   AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE
+   FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE
+   USE OF THIS SOFTWARE.
+
+
+════════════════════════════════════════════════════════════════
+SUMMARY (non-binding, for convenience)
+════════════════════════════════════════════════════════════════
+
+  ✓ Write programs in Urdu PL → fully yours, no credits needed
+  ✓ Sell or open-source what you build → your choice entirely
+  ✓ Fork and modify the language itself → allowed with credit
+  ✓ Contribute to this project → welcome, attribution preserved
+  ✗ Remove or hide original author credit from the language → not allowed
+  ✗ Claim you created the original language → not allowed
+
+
+════════════════════════════════════════════════════════════════
+اردو خلاصہ (غیر پابند، صرف سہولت کے لیے)
+════════════════════════════════════════════════════════════════
+
+  ✓ اردو پروگرامنگ لینگویج میں لکھا گیا پروگرام مکمل طور پر آپ کا ہے
+  ✓ اپنے پروگرام کو مفت، بامعاوضہ یا اوپن سورس تقسیم کر سکتے ہیں
+  ✓ لینگویج کے سورس کوڈ میں ترمیم کر سکتے ہیں — کریڈٹ دینا ضروری ہے
+  ✓ اس پروجیکٹ میں حصہ ڈال سکتے ہیں — خوش آمدید
+  ✗ لینگویج کے سورس سے اصل مصنف کا نام نہیں ہٹا سکتے
+  ✗ یہ نہیں کہہ سکتے کہ آپ نے اصل اردو پروگرامنگ لینگویج بنائی
+
+تخلیق کار: محمد زاہد وڈیوالے
