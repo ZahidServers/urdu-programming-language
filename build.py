@@ -109,6 +109,9 @@ ML = {
     "joblib":         "joblib",
     "threadpoolctl":  "threadpoolctl",
     "llama_cpp":      "llama-cpp-python",
+    "torch":          "PyTorch",
+    "matplotlib":     "matplotlib",
+    "PIL":            "Pillow",
 }
 
 TF = {
@@ -190,8 +193,22 @@ def build(fast: bool = False, onefile: bool = False,
         "--noinclude-numba-mode=nofollow",
         "--module-parameter=torch-disable-jit=yes",
         "--module-parameter=numba-disable-jit=yes",
+        "--module-parameter=django-settings-module=_build_settings",
         # disable Qt bindings — we use no Qt
         "--enable-plugins=no-qt",
+        # torch anti-bloat: skip testing internals (Python 3.12 syntax) and
+        # disable anti-bloat plugin to avoid DLL init failure on Windows when
+        # the plugin evaluates torch.utils._config_module at compile time
+        "--nofollow-import-to=torch.testing._internal",
+        "--nofollow-import-to=django.core.management",
+        "--disable-plugin=anti-bloat",
+        "--include-package=ctypes",
+        "--include-module=_ctypes",
+        # ffi.dll is _ctypes.pyd's libffi dependency; Nuitka misses it because
+        # Anaconda keeps it in Library/bin rather than DLLs/
+        r"--include-data-file=C:\ProgramData\anaconda3\Library\bin\ffi.dll=ffi.dll",
+        "--include-module=ssl",
+        "--include-module=hashlib",
         *[f"--include-package={p}" for p in all_pkgs],
         "--python-flag=-m",
         "urdu",

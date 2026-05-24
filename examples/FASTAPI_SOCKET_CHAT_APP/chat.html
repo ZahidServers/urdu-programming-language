@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<!--
+  اردو چیٹ — مستقل HTML فائل
+  یہ فائل براہ راست براؤزر میں کھولی جا سکتی ہے
+  پہلے chat.urdu چلائیں:  urdu run tests/examples/chat.urdu
+  پھر یہ فائل براؤزر میں کھولیں یا http://localhost:5000 پر جائیں
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اردو چیٹ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    direction: rtl;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #کنٹینر {
+    background: #16213e;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  h1 { color: #e94560; margin-bottom: 1.5rem; text-align: center; font-size: 1.8rem; }
+  p.راہنمائی { color: #888; text-align: center; font-size: 0.85rem; margin-bottom: 1rem; }
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #0f3460;
+    color: #eee;
+    font-size: 1rem;
+    direction: rtl;
+    margin-bottom: 0.75rem;
+    outline: none;
+  }
+  input:focus { border-color: #e94560; }
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    background: #e94560;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #c73652; }
+  #پیغامات {
+    height: 380px;
+    overflow-y: auto;
+    background: #0f3460;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .پیغام {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    word-break: break-word;
+    max-width: 85%;
+  }
+  .پیغام.خود {
+    background: #0a4a2e;
+    align-self: flex-start;
+    border-right: 3px solid #e94560;
+  }
+  .پیغام .نام { color: #e94560; font-weight: bold; margin-left: 0.4rem; }
+  .سسٹم { color: #888; font-size: 0.85rem; text-align: center; font-style: italic; }
+  #قطار { display: flex; gap: 0.5rem; }
+  #قطار input { flex: 1; margin-bottom: 0; }
+  #قطار button { width: auto; padding: 0.75rem 1.5rem; }
+  #حالت {
+    text-align: center;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+  .جڑا { background: #0a4a2e; color: #4f4; }
+  .منقطع { background: #4a0a0a; color: #f44; }
+  #چیٹ { display: none; }
+</style>
+</head>
+<body>
+<div id="کنٹینر">
+  <h1>اردو چیٹ</h1>
+  <p class="راہنمائی">
+    پہلے سرور چلائیں: <code>urdu run tests/examples/chat.urdu</code>
+  </p>
+
+  <div id="لاگ_ان">
+    <input id="نام_ان" type="text" placeholder="آپ کا نام لکھیں..." maxlength="20" />
+    <button onclick="جوڑو()">چیٹ شروع کریں</button>
+  </div>
+
+  <div id="چیٹ">
+    <div id="حالت" class="منقطع">منقطع</div>
+    <div id="پیغامات"></div>
+    <div id="قطار">
+      <input id="متن_ان" type="text" placeholder="پیغام لکھیں..." maxlength="500" />
+      <button onclick="بھیجو()">بھیجیں</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var ws = null;
+var اپنا_نام = '';
+
+function جوڑو() {
+  var نام = document.getElementById('نام_ان').value.trim();
+  if (!نام) { alert('براہ کرم نام لکھیں'); return; }
+  اپنا_نام = نام;
+  ws = new WebSocket('ws://localhost:8765');
+
+  ws.onopen = function() {
+    document.getElementById('لاگ_ان').style.display = 'none';
+    document.getElementById('چیٹ').style.display = 'block';
+    document.getElementById('حالت').className = 'جڑا';
+    document.getElementById('حالت').textContent = 'جڑا ہوا: ' + اپنا_نام;
+    var اعلان = JSON.stringify({نام: اپنا_نام, متن: 'چیٹ میں شامل ہوا', نوع: 'شامل'});
+    ws.send(اعلان);
+    document.getElementById('متن_ان').focus();
+  };
+
+  ws.onmessage = function(e) {
+    var ڈیٹا;
+    try { ڈیٹا = JSON.parse(e.data); }
+    catch(err) { ڈیٹا = {نام: 'سرور', متن: e.data, نوع: 'پیغام'}; }
+    پیغام_شامل(ڈیٹا);
+  };
+
+  ws.onclose = function() {
+    document.getElementById('حالت').className = 'منقطع';
+    document.getElementById('حالت').textContent = 'منقطع ہو گیا';
+  };
+
+  ws.onerror = function() {
+    alert('WebSocket سے جڑنے میں مسئلہ۔ کیا سرور چل رہا ہے؟');
+  };
+}
+
+function پیغام_شامل(ڈیٹا) {
+  var div = document.createElement('div');
+  if (ڈیٹا.نوع === 'شامل' || ڈیٹا.نوع === 'گیا') {
+    div.className = 'پیغام سسٹم';
+    div.textContent = ڈیٹا.نام + ' ' + ڈیٹا.متن;
+  } else {
+    div.className = (ڈیٹا.نام === اپنا_نام) ? 'پیغام خود' : 'پیغام';
+    var عنوان = document.createElement('span');
+    عنوان.className = 'نام';
+    عنوان.textContent = ڈیٹا.نام + ': ';
+    div.appendChild(عنوان);
+    div.appendChild(document.createTextNode(ڈیٹا.متن));
+  }
+  var باکس = document.getElementById('پیغامات');
+  باکس.appendChild(div);
+  باکس.scrollTop = باکس.scrollHeight;
+}
+
+function بھیجو() {
+  var متن = document.getElementById('متن_ان').value.trim();
+  if (!متن || !ws || ws.readyState !== WebSocket.OPEN) return;
+  var ڈیٹا = JSON.stringify({نام: اپنا_نام, متن: متن, نوع: 'پیغام'});
+  ws.send(ڈیٹا);
+  document.getElementById('متن_ان').value = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('چیٹ').style.display === 'none') {
+    جوڑو();
+  } else {
+    بھیجو();
+  }
+});
+</script>
+</body>
+</html>

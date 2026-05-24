@@ -1,0 +1,173 @@
+// ══════════════════════════════════════════════════════════════════
+// اردو چیٹ ایپلیکیشن — FastAPI + Socket.IO
+//
+// pip install fastapi uvicorn python-socketio
+// urdu run chat.urdu
+// پھر براؤزر میں کھولیں: http://localhost:5000
+// ══════════════════════════════════════════════════════════════════
+
+درآمد { فاسٹ_اے_پی_آئی, ایچ_ٹی_ایم_ایل_جواب } سے "اردو/ویب";
+درآمد { ساکٹ_آئی_او } سے "اردو/ویب";
+درآمد { غیر_متزامن_چلائیں } سے "اردو/دھاگہ";
+
+متغیر ایپ = نیا فاسٹ_اے_پی_آئی({ عنوان: "اردو چیٹ" });
+متغیر sio = نیا ساکٹ_آئی_او({ کورس: ["*"] });
+
+// ─── صارفین کی فہرست: sid → نام ────────────────────────────────────────────
+متغیر صارفین = {};
+
+// ─── HTML صفحہ ─────────────────────────────────────────────────────────────
+متغیر صفحہ = `<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اردو چیٹ</title>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #1a1a2e; color: #eee; direction: rtl; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  #کنٹینر { background: #16213e; border-radius: 12px; padding: 2rem; width: 100%; max-width: 600px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  h1 { color: #e94560; text-align: center; margin-bottom: 1.5rem; }
+  input { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #444; background: #0f3460; color: #eee; font-size: 1rem; direction: rtl; margin-bottom: 0.75rem; outline: none; }
+  input:focus { border-color: #e94560; }
+  button { width: 100%; padding: 0.75rem; border-radius: 8px; border: none; background: #e94560; color: #fff; font-size: 1rem; cursor: pointer; }
+  button:hover { background: #c73652; }
+  #پیغامات { height: 360px; overflow-y: auto; background: #0f3460; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .پیغام { background: #16213e; border-radius: 8px; padding: 0.5rem 0.75rem; word-break: break-word; }
+  .پیغام.خود { background: #0a4a2e; }
+  .پیغام .نام { color: #e94560; font-weight: bold; margin-left: 0.4rem; }
+  .سسٹم { color: #888; font-size: 0.85rem; text-align: center; font-style: italic; }
+  #قطار { display: flex; gap: 0.5rem; }
+  #قطار input { flex: 1; margin-bottom: 0; }
+  #قطار button { width: auto; padding: 0.75rem 1.5rem; }
+  #حالت { text-align: center; padding: 0.3rem; border-radius: 20px; margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .جڑا { background: #0a4a2e; color: #4f4; }
+  .منقطع { background: #4a0a0a; color: #f44; }
+  #چیٹ { display: none; }
+</style>
+</head>
+<body>
+<div id="کنٹینر">
+  <h1>اردو چیٹ</h1>
+
+  <div id="لاگ_ان">
+    <input id="نام_ان" placeholder="آپ کا نام لکھیں..." maxlength="20" />
+    <button onclick="جوڑو()">چیٹ شروع کریں</button>
+  </div>
+
+  <div id="چیٹ">
+    <div id="حالت" class="منقطع">منقطع</div>
+    <div id="پیغامات"></div>
+    <div id="قطار">
+      <input id="متن_ان" placeholder="پیغام لکھیں..." maxlength="500" />
+      <button onclick="بھیجو()">بھیجیں</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var socket = null;
+var اپنا_نام = '';
+
+function جوڑو() {
+  var نام = document.getElementById('نام_ان').value.trim();
+  if (!نام) { alert('براہ کرم نام لکھیں'); return; }
+  اپنا_نام = نام;
+
+  socket = io();
+
+  socket.on('connect', function() {
+    socket.emit('نام_سیٹ', { نام: اپنا_نام });
+    document.getElementById('لاگ_ان').style.display = 'none';
+    document.getElementById('چیٹ').style.display = 'block';
+    document.getElementById('حالت').className = 'جڑا';
+    document.getElementById('حالت').textContent = 'جڑا ہوا: ' + اپنا_نام;
+    document.getElementById('متن_ان').focus();
+  });
+
+  socket.on('پیغام', function(data) {
+    پیغام_شامل(data);
+  });
+
+  socket.on('disconnect', function() {
+    document.getElementById('حالت').className = 'منقطع';
+    document.getElementById('حالت').textContent = 'منقطع';
+  });
+}
+
+function پیغام_شامل(data) {
+  var div = document.createElement('div');
+  if (data.نوع === 'شامل' || data.نوع === 'گیا') {
+    div.className = 'پیغام سسٹم';
+    div.textContent = data.نام + ' ' + data.متن;
+  } else {
+    div.className = (data.نام === اپنا_نام) ? 'پیغام خود' : 'پیغام';
+    var span = document.createElement('span');
+    span.className = 'نام';
+    span.textContent = data.نام + ': ';
+    div.appendChild(span);
+    div.appendChild(document.createTextNode(data.متن));
+  }
+  var box = document.getElementById('پیغامات');
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function بھیجو() {
+  var متن = document.getElementById('متن_ان').value.trim();
+  if (!متن || !socket) return;
+  socket.emit('پیغام', { متن: متن });
+  document.getElementById('متن_ان').value = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  if (!socket || !socket.connected) { جوڑو(); } else { بھیجو(); }
+});
+</script>
+</body>
+</html>`;
+
+// ─── HTTP: صفحہ فراہم کریں ──────────────────────────────────────────────────
+@ایپ.حاصل("/")
+فنکشن جڑ() {
+    واپس نیا ایچ_ٹی_ایم_ایل_جواب(صفحہ);
+}
+
+// ─── Socket.IO: جڑنا ────────────────────────────────────────────────────────
+@sio.پر_جڑنا()
+فنکشن جڑنا(sid, environ) {
+    صارفین[sid] = "مہمان";
+    لکھو("جڑا: " + sid);
+}
+
+// ─── Socket.IO: نام سیٹ کرنا ────────────────────────────────────────────────
+@sio.پر("نام_سیٹ")
+فنکشن نام_سیٹ(sid, data) {
+    متغیر نام = data["نام"];
+    صارفین[sid] = نام;
+    لکھو("نیا صارف: " + نام);
+    غیر_متزامن_چلائیں(sio.نشر("پیغام", { "نام": نام, "متن": "چیٹ میں شامل ہوا", "نوع": "شامل" }));
+}
+
+// ─── Socket.IO: پیغام ────────────────────────────────────────────────────────
+@sio.پر("پیغام")
+فنکشن پیغام_ملا(sid, data) {
+    متغیر نام = صارفین.get(sid, "مہمان");
+    لکھو(نام + ": " + data["متن"]);
+    غیر_متزامن_چلائیں(sio.نشر("پیغام", { "نام": نام, "متن": data["متن"], "نوع": "پیغام" }));
+}
+
+// ─── Socket.IO: منقطع ───────────────────────────────────────────────────────
+@sio.پر_منقطع()
+فنکشن منقطع(sid) {
+    متغیر نام = صارفین.get(sid, "صارف");
+    لکھو("منقطع: " + نام);
+    غیر_متزامن_چلائیں(sio.نشر("پیغام", { "نام": نام, "متن": "چیٹ سے چلا گیا", "نوع": "گیا" }));
+}
+
+// ─── سرور چلائیں ────────────────────────────────────────────────────────────
+لکھو("اردو چیٹ سرور شروع ہو رہا ہے...");
+لکھو("براؤزر کھولیں: http://localhost:5000");
+sio.چلائیں(ایپ.ایپ, پورٹ=5000);
