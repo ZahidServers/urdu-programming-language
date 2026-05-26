@@ -1,0 +1,70 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}بل BL-{{ "%03d" % inv.id }}{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h1 style="margin-bottom:0">بل نمبر: BL-{{ "%03d" % inv.id }}</h1>
+  <a href="/invoices" class="btn btn-secondary">← واپس</a>
+</div>
+
+<div class="card">
+  <div class="inv-header">
+    <div class="inv-meta">
+      <p><strong>گاہک:</strong> {{ inv.customer_name }}</p>
+      <p><strong>تاریخ:</strong> {{ inv.date }}</p>
+      {% اگر inv.notes %}
+      <p><strong>نوٹس:</strong> {{ inv.notes }}</p>
+      {% اگر_ختم %}
+    </div>
+    <div>
+      {% اگر inv.status == 'paid' %}
+      <span class="badge badge-paid" style="font-size:1rem; padding:.4rem 1rem;">ادا شدہ</span>
+      {% ورنہ %}
+      <span class="badge badge-pending" style="font-size:1rem; padding:.4rem 1rem;">زیر التواء</span>
+      {% اگر_ختم %}
+    </div>
+  </div>
+
+  <hr style="margin:1.5rem 0; border:none; border-top:1px solid #eee;">
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>تفصیل</th>
+          <th>مقدار</th>
+          <th>فی اکائی قیمت</th>
+          <th>رقم</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% کے_لیے item کا items %}
+        <tr>
+          <td>{{ لوپ.اشاریہ }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.qty }}</td>
+          <td>₹{{ "%.2f" % item.price }}</td>
+          <td>₹{{ "%.2f" % (item.qty * item.price) }}</td>
+        </tr>
+        {% کے_لیے_ختم %}
+        <tr class="inv-total-row">
+          <td colspan="4" style="text-align:left;">کل رقم</td>
+          <td>₹{{ "%.2f" % total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {% اگر inv.status != 'paid' %}
+  <div style="margin-top:1.75rem;">
+    <form method="POST" action="/invoices/{{ inv.id }}/pay" style="display:inline;">
+      <button type="submit" class="btn btn-success"
+        onclick="return confirm('کیا آپ اس بل کو ادا شدہ نشان کرنا چاہتے ہیں؟')">
+        ادا شدہ نشان کریں
+      </button>
+    </form>
+  </div>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

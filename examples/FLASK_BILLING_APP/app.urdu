@@ -1,0 +1,131 @@
+// ══════════════════════════════════════════════════════════════
+// اردو بلنگ سسٹم — Flask + SQLite
+//
+// urdu run app.urdu
+// براؤزر میں کھولیں: http://localhost:5000
+// ══════════════════════════════════════════════════════════════
+
+درآمد { فلاسک, فلاسک_سانچہ, فلاسک_رجوع, فلاسک_درخواست } سے "اردو/ویب";
+درآمد { ایس_کیو_لائٹ } سے "اردو/ڈیٹا_بیس";
+
+// ─── DB مددگار ────────────────────────────────────────────────
+
+غیر_متزامن فنکشن dq(sql, p) {
+    متغیر تجارت = نیا ایس_کیو_لائٹ("billing.db");
+    انتظار تجارت.جوڑیں();
+    واپس انتظار تجارت.سوال(sql, p);
+}
+
+غیر_متزامن فنکشن dx(sql, p) {
+    متغیر تجارت = نیا ایس_کیو_لائٹ("billing.db");
+    انتظار تجارت.جوڑیں();
+    انتظار تجارت.چلائیں(sql, p);
+}
+
+غیر_متزامن فنکشن dxi(sql, p) {
+    متغیر تجارت = نیا ایس_کیو_لائٹ("billing.db");
+    انتظار تجارت.جوڑیں();
+    انتظار تجارت.چلائیں(sql, p);
+    واپس (انتظار تجارت.سوال("SELECT last_insert_rowid() as id", []))[0]["id"];
+}
+
+// ─── ٹیبل بنائیں ──────────────────────────────────────────────
+انتظار dx("CREATE TABLE IF NOT EXISTS customers (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT DEFAULT '', email TEXT DEFAULT '')", []);
+انتظار dx("CREATE TABLE IF NOT EXISTS invoices (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_id INTEGER NOT NULL, date TEXT NOT NULL, status TEXT DEFAULT 'pending', notes TEXT DEFAULT '')", []);
+انتظار dx("CREATE TABLE IF NOT EXISTS invoice_items (id INTEGER PRIMARY KEY AUTOINCREMENT, invoice_id INTEGER NOT NULL, description TEXT NOT NULL, qty REAL NOT NULL DEFAULT 1, price REAL NOT NULL DEFAULT 0)", []);
+
+// ─── Flask ────────────────────────────────────────────────────
+متغیر ایپ = نیا فلاسک();
+
+// ─── ڈیش بورڈ ────────────────────────────────────────────────
+@ایپ.حاصل("/")
+غیر_متزامن فنکشن گھر() {
+    متغیر gc = (انتظار dq("SELECT COUNT(*) as n FROM customers", []))[0]["n"];
+    متغیر ic = (انتظار dq("SELECT COUNT(*) as n FROM invoices", []))[0]["n"];
+    متغیر pnd = (انتظار dq("SELECT COALESCE(SUM(ii.qty * ii.price), 0) as t FROM invoices inv LEFT JOIN invoice_items ii ON ii.invoice_id = inv.id WHERE inv.status = 'pending'", []))[0]["t"];
+    متغیر paid = (انتظار dq("SELECT COALESCE(SUM(ii.qty * ii.price), 0) as t FROM invoices inv LEFT JOIN invoice_items ii ON ii.invoice_id = inv.id WHERE inv.status = 'paid'", []))[0]["t"];
+    متغیر recent = انتظار dq("SELECT inv.id, c.name, inv.date, inv.status, COALESCE(SUM(ii.qty * ii.price), 0) as total FROM invoices inv JOIN customers c ON c.id = inv.customer_id LEFT JOIN invoice_items ii ON ii.invoice_id = inv.id GROUP BY inv.id ORDER BY inv.id DESC LIMIT 5", []);
+    واپس فلاسک_سانچہ("dashboard.html", customers=gc, invoices=ic, pending=pnd, paid=paid, recent=recent);
+}
+
+// ─── گاہکان ───────────────────────────────────────────────────
+@ایپ.حاصل("/customers")
+غیر_متزامن فنکشن گاہکان_فہرست() {
+    متغیر فہرست = انتظار dq("SELECT * FROM customers ORDER BY name", []);
+    واپس فلاسک_سانچہ("customers.html", items=فہرست);
+}
+
+@ایپ.حاصل("/customers/new")
+فنکشن گاہک_فارم() {
+    واپس فلاسک_سانچہ("customer_form.html");
+}
+
+@ایپ.بھیجیں("/customers/new")
+غیر_متزامن فنکشن گاہک_محفوظ() {
+    متغیر req = فلاسک_درخواست();
+    متغیر نام = req.form.get("name", "");
+    متغیر فون = req.form.get("phone", "");
+    متغیر ای_میل = req.form.get("email", "");
+    اگر (len(نام) > 0) {
+        انتظار dx("INSERT INTO customers (name, phone, email) VALUES (?, ?, ?)", [نام, فون, ای_میل]);
+    }
+    واپس فلاسک_رجوع("/customers");
+}
+
+// ─── بل فہرست ─────────────────────────────────────────────────
+@ایپ.حاصل("/invoices")
+غیر_متزامن فنکشن بل_فہرست() {
+    متغیر فہرست = انتظار dq("SELECT inv.id, c.name, inv.date, inv.status, COALESCE(SUM(ii.qty * ii.price), 0) as total FROM invoices inv JOIN customers c ON c.id = inv.customer_id LEFT JOIN invoice_items ii ON ii.invoice_id = inv.id GROUP BY inv.id ORDER BY inv.id DESC", []);
+    واپس فلاسک_سانچہ("invoices.html", items=فہرست);
+}
+
+// ─── نیا بل ───────────────────────────────────────────────────
+@ایپ.حاصل("/invoices/new")
+غیر_متزامن فنکشن بل_فارم() {
+    متغیر گاہکان = انتظار dq("SELECT id, name FROM customers ORDER BY name", []);
+    واپس فلاسک_سانچہ("invoice_form.html", customers=گاہکان);
+}
+
+@ایپ.بھیجیں("/invoices/new")
+غیر_متزامن فنکشن بل_محفوظ() {
+    متغیر req = فلاسک_درخواست();
+    متغیر cid = req.form.get("customer_id", "");
+    متغیر dt = req.form.get("date", "");
+    متغیر notes = req.form.get("notes", "");
+    متغیر bid = انتظار dxi("INSERT INTO invoices (customer_id, date, notes) VALUES (?, ?, ?)", [cid, dt, notes]);
+    متغیر names = req.form.getlist("item_name");
+    متغیر qtys = req.form.getlist("item_qty");
+    متغیر prices = req.form.getlist("item_price");
+    متغیر idx = 0;
+    کے_لیے (متغیر nm کا names) {
+        اگر (len(nm) > 0) {
+            انتظار dx("INSERT INTO invoice_items (invoice_id, description, qty, price) VALUES (?, ?, ?, ?)", [bid, nm, qtys[idx], prices[idx]]);
+        }
+        idx = idx + 1;
+    }
+    واپس فلاسک_رجوع("/invoices");
+}
+
+// ─── بل دیکھیں ────────────────────────────────────────────────
+@ایپ.حاصل("/invoices/<bid>")
+غیر_متزامن فنکشن بل_دیکھیں(bid) {
+    متغیر inv = انتظار dq("SELECT inv.*, c.name as customer_name FROM invoices inv JOIN customers c ON c.id = inv.customer_id WHERE inv.id = ?", [عدد(bid)]);
+    اگر (len(inv) == 0) {
+        واپس فلاسک_رجوع("/invoices");
+    }
+    متغیر items = انتظار dq("SELECT * FROM invoice_items WHERE invoice_id = ?", [عدد(bid)]);
+    متغیر total = (انتظار dq("SELECT COALESCE(SUM(qty * price), 0) as t FROM invoice_items WHERE invoice_id = ?", [عدد(bid)]))[0]["t"];
+    واپس فلاسک_سانچہ("invoice.html", inv=inv[0], items=items, total=total);
+}
+
+// ─── بل ادا کریں ──────────────────────────────────────────────
+@ایپ.بھیجیں("/invoices/<bid>/pay")
+غیر_متزامن فنکشن بل_ادا(bid) {
+    انتظار dx("UPDATE invoices SET status = 'paid' WHERE id = ?", [عدد(bid)]);
+    واپس فلاسک_رجوع("/invoices/" + bid);
+}
+
+// ─── شروع ─────────────────────────────────────────────────────
+لکھو("اردو بلنگ سسٹم شروع ہو رہا ہے...");
+لکھو("براؤزر کھولیں: http://localhost:5000");
+ایپ.چلائیں(پورٹ=5000, ڈیبگ=جھوٹ);

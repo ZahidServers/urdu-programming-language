@@ -16,9 +16,10 @@ pip install fastapi uvicorn flask python-socketio websockets aiohttp python-jose
 
 1. [FastAPI (فاسٹ_اے_پی_آئی)](#fastapi-فاسٹ_اے_پی_آئی)
 2. [Flask (فلاسک)](#flask-فلاسک)
-3. [WebSocket (ویب_ساکٹ)](#websocket-ویب_ساکٹ)
-4. [Socket.IO (ساکٹ_آئی_او)](#socketio-ساکٹ_آئی_او)
-5. [HTTP Client (نیٹ / جالی_کلائنٹ)](#http-client-نیٹ--جالی_کلائنٹ)
+3. [Urdu Jinja2 / Django Templates](#urdu-jinja2--django-templates----اردو-سانچے)
+4. [WebSocket (ویب_ساکٹ)](#websocket-ویب_ساکٹ)
+5. [Socket.IO (ساکٹ_آئی_او)](#socketio-ساکٹ_آئی_او)
+6. [HTTP Client (نیٹ / جالی_کلائنٹ)](#http-client-نیٹ--جالی_کلائنٹ)
 
 ---
 
@@ -979,6 +980,169 @@ Blueprints group related routes and can be registered on the main app with a URL
 
 ---
 
+## Urdu Jinja2 / Django Templates — اردو سانچے
+
+Flask's Jinja2 and Django's template engine both support **Urdu tag keywords** natively. The Urdu runtime preprocesses `.html` template files before the engine sees them, so all standard Jinja2/Django features work as normal — just written in Urdu.
+
+> **اردو:** Flask کا Jinja2 اور Django کا سانچہ انجن دونوں اردو ٹیگ کلیدی الفاظ کو پیشگی معالجے کے ذریعے سپورٹ کرتے ہیں۔ سانچہ فائلوں میں اردو ٹیگ لکھیں — باقی سب خودکار ہے۔
+
+**No extra setup required.** `نیا فلاسک()` automatically wraps the Jinja2 loader.
+
+---
+
+### Tag Keywords — ٹیگ کلیدی الفاظ
+
+| اردو ٹیگ | Jinja2/Django ٹیگ |
+|----------|-------------------|
+| `{% اگر شرط %}` | `{% if condition %}` |
+| `{% ورنہ %}` | `{% else %}` |
+| `{% وگرنہ شرط %}` | `{% elif condition %}` |
+| `{% اگر_ختم %}` | `{% endif %}` |
+| `{% کے_لیے x کا فہرست %}` | `{% for x in list %}` |
+| `{% کے_لیے_ختم %}` | `{% endfor %}` |
+| `{% توسیع "بنیاد.html" %}` | `{% extends "base.html" %}` |
+| `{% بلاک نام %}` | `{% block name %}` |
+| `{% بلاک_ختم %}` | `{% endblock %}` |
+| `{% شامل "فائل.html" %}` | `{% include "file.html" %}` |
+| `{% متغیر x = 5 %}` | `{% set x = 5 %}` |
+
+---
+
+### Expression Keywords — اظہار کلیدی الفاظ
+
+Inside `{{ }}` expressions and `{% %}` conditions, these Urdu words are translated:
+
+| اردو | English |
+|------|---------|
+| `اور` | `and` |
+| `یا` | `or` |
+| `نہیں` | `not` |
+| `کا` | `in` |
+| `ہے` | `is` |
+| `سچ` | `true` |
+| `جھوٹ` | `false` |
+| `خالی` | `none` |
+| `لوپ` | `loop` (Jinja2 loop variable) |
+
+---
+
+### Filters — فلٹر
+
+Urdu filter names are used after `|` in variable expressions:
+
+| اردو فلٹر | Jinja2 فلٹر |
+|-----------|------------|
+| `\|بڑا` | `\|upper` |
+| `\|چھوٹا` | `\|lower` |
+| `\|طول` | `\|length` |
+| `\|محفوظ` | `\|safe` |
+| `\|عنوانی` | `\|title` |
+| `\|تراشیں` | `\|trim` |
+| `\|کاٹیں` | `\|truncate` |
+| `\|ترتیب` | `\|sort` |
+| `\|الٹا` | `\|reverse` |
+| `\|پہلے_سے(val)` | `\|default(val)` |
+| `\|ملائیں(sep)` | `\|join(sep)` |
+| `\|نقشہ(attr=...)` | `\|map(attribute=...)` |
+
+---
+
+### Loop Attributes — لوپ خصوصیات
+
+Inside `{% کے_لیے %}` blocks, access Jinja2's loop variable with Urdu dot-attributes:
+
+| اردو | Jinja2 |
+|------|--------|
+| `لوپ.اشاریہ` | `loop.index` (1-based) |
+| `لوپ.اشاریہ0` | `loop.index0` (0-based) |
+| `لوپ.پہلا` | `loop.first` |
+| `لوپ.آخری` | `loop.last` |
+| `لوپ.طول` | `loop.length` |
+
+---
+
+### Template Inheritance Example — سانچہ وراثت کی مثال
+
+**`templates/بنیاد.html`** — base template:
+
+```html
+<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<head>
+  <title>{% بلاک عنوان %}میری ایپ{% بلاک_ختم %}</title>
+</head>
+<body>
+  <nav>
+    <a href="/">گھر</a>
+  </nav>
+  <main>
+    {% بلاک مواد %}{% بلاک_ختم %}
+  </main>
+</body>
+</html>
+```
+
+**`templates/گھر.html`** — child template:
+
+```html
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}گھر{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>خوش آمدید!</h1>
+
+{% اگر اشیاء %}
+<p>{{ اشیاء|طول }} اشیاء ملیں:</p>
+{% کے_لیے شے کا اشیاء %}
+<div>{{ لوپ.اشاریہ }}. {{ شے.نام|عنوانی }}</div>
+{% کے_لیے_ختم %}
+{% ورنہ %}
+<p>کوئی شے نہیں۔</p>
+{% اگر_ختم %}
+{% بلاک_ختم %}
+```
+
+**`app.urdu`** — render the template:
+
+```urdu
+درآمد { فلاسک, فلاسک_سانچہ } سے "اردو/ویب";
+
+متغیر ایپ = نیا فلاسک();
+
+@ایپ.حاصل("/")
+فنکشن گھر() {
+    متغیر فہرست = [
+        { "نام": "کتاب" },
+        { "نام": "قلم" },
+        { "نام": "کاغذ" }
+    ];
+    واپس فلاسک_سانچہ("گھر.html", اشیاء=فہرست);
+}
+
+ایپ.چلائیں(پورٹ=5000);
+```
+
+---
+
+### Mixing Urdu and English — اردو اور انگریزی کا اشتراک
+
+Urdu and standard Jinja2 keywords can be freely mixed in the same template file:
+
+```html
+{% توسیع "base.html" %}
+{% block title %}صفحہ{% endblock %}
+
+{% بلاک مواد %}
+{% if items %}
+  {% کے_لیے i کا items %}
+  <p>{{ loop.index }}: {{ i.name|upper }}</p>
+  {% endfor %}
+{% اگر_ختم %}
+{% بلاک_ختم %}
+```
+
+---
+
 ## WebSocket (ویب_ساکٹ) — ویب ساکٹ سرور
 
 A standalone WebSocket server using the `websockets` library.
@@ -1082,21 +1246,35 @@ ws.چلائیں();
 
 ## Socket.IO (ساکٹ_آئی_او) — حقیقی وقت واقعاتی نظام
 
-A full-featured real-time event system built on Socket.IO with room support, namespaces, and broadcasting.
+A full-featured real-time event system built on Socket.IO with room support, namespaces, and broadcasting. Supports **Flask** (WSGI), **Django** (WSGI), and **FastAPI** (ASGI) — the correct server type is chosen automatically.
 
-> **اردو:** Socket.IO کمروں (rooms)، نام فضاؤں (namespaces) اور نشر (broadcasting) کے ساتھ ایک مکمل حقیقی وقت واقعاتی نظام ہے۔ یہ سادہ ویب ساکٹ سے زیادہ طاقتور ہے اور چیٹ رومز اور گروپ اطلاعات کے لیے بہترین ہے۔
+> **اردو:** Socket.IO کمروں (rooms)، نام فضاؤں (namespaces) اور نشر (broadcasting) کے ساتھ ایک مکمل حقیقی وقت واقعاتی نظام ہے۔ Flask، Django اور FastAPI تینوں کے ساتھ کام کرتا ہے — فریم ورک خود بخود پہچانا جاتا ہے۔
 
 **Import:**
 
 ```urdu
 درآمد { ساکٹ_آئی_او, فاسٹ_اے_پی_آئی } سے "اردو/ویب";
+// یا
+درآمد { ساکٹ_آئی_او, فلاسک } سے "اردو/ویب";
+// یا
+درآمد { ساکٹ_آئی_او, ڈجانگو } سے "اردو/ویب";
 ```
 
 **Constructor:**
 
 ```urdu
-متغیر sio = نیا ساکٹ_آئی_او({ کورس: ["*"], غیر_متزامن: سچ });
+// ایپ پاس کریں — WSGI/ASGI خود بخود پہچانا جاتا ہے
+متغیر sio = نیا ساکٹ_آئی_او(ایپ=ایپ);
+
+// یا ترتیب dict کے ساتھ
+متغیر sio = نیا ساکٹ_آئی_او({ ایپ: ایپ, کورس: ["*"] });
 ```
+
+| پیرامیٹر | پہلے سے | تفصیل |
+|-----------|---------|-------|
+| `ایپ` | `None` | Flask / Django / FastAPI wrapper — auto-detects WSGI vs ASGI |
+| `کورس` | `"*"` | Allowed CORS origins |
+| `غیر_متزامن` | `True` | Overridden automatically when Flask/Django is detected |
 
 ---
 
@@ -1107,96 +1285,129 @@ A full-featured real-time event system built on Socket.IO with room support, nam
 | `@sio.پر("event")` | Register event handler |
 | `@sio.پر_جڑنا()` | Shortcut for "connect" event |
 | `@sio.پر_منقطع()` | Shortcut for "disconnect" event |
-| `await sio.بھیجو(event, data, کمرہ=sid)` | Emit to specific client/room |
-| `await sio.نشر(event, data)` | Broadcast to all clients |
-| `await sio.کمرہ_میں_شامل(sid, room)` | Add client to a room |
-| `await sio.کمرہ_چھوڑیں(sid, room)` | Remove client from room |
+| `sio.بھیجو(event, data, کمرہ=sid)` | Emit to specific client/room |
+| `sio.نشر(event, data)` | Broadcast to all clients |
+| `sio.کمرہ_میں_شامل(sid, room)` | Add client to a room |
+| `sio.کمرہ_چھوڑیں(sid, room)` | Remove client from room |
 | `sio.کمرے(sid)` | List rooms for a client |
-| `sio.asgi_ایپ(fastapi_app)` | Combine with FastAPI into ASGI app |
-| `sio.چلائیں(fastapi_app, پورٹ=8000)` | Run combined ASGI server |
+| `sio.wsgi_ایپ(ایپ)` | WSGI wrapper for Flask / Django |
+| `sio.asgi_ایپ(ایپ)` | ASGI wrapper for FastAPI |
+| `sio.چلائیں(ایپ, پورٹ=8000)` | Run server (werkzeug for WSGI, uvicorn for ASGI) |
+
+> **Note:** `بھیجو`, `نشر`, `کمرہ_میں_شامل`, `کمرہ_چھوڑیں` are `async` — use `انتظار` in async handlers, or `غیر_متزامن_چلائیں()` from sync handlers.
 
 ---
 
-### Socket.IO Example: Events and Rooms
+### Socket.IO با FastAPI (ASGI)
 
 ```urdu
 درآمد { ساکٹ_آئی_او, فاسٹ_اے_پی_آئی, جیسن_جواب } سے "اردو/ویب";
+درآمد { غیر_متزامن_چلائیں } سے "اردو/دھاگہ";
 
 متغیر ایپ = نیا فاسٹ_اے_پی_آئی({ عنوان: "Socket.IO چیٹ" });
-متغیر sio  = نیا ساکٹ_آئی_او({ کورس: ["*"] });
+متغیر sio  = نیا ساکٹ_آئی_او(ایپ=ایپ);
 
-// ─── جڑنا ────────────────────────────────────────────────
 @sio.پر_جڑنا()
-غیر_متزامن فنکشن جڑنا(sid, environ) {
-    لکھو(`جڑا: ${sid}`);
-    انتظار sio.بھیجو("خوش_آمدید", { "پیغام": "آپ جڑ گئے!" }, کمرہ=sid);
+فنکشن جڑنا(sid, environ) {
+    غیر_متزامن_چلائیں(sio.بھیجو("خوش_آمدید", { "پیغام": "آپ جڑ گئے!" }, کمرہ=sid));
 }
 
-// ─── پیغام ───────────────────────────────────────────────
 @sio.پر("پیغام")
-غیر_متزامن فنکشن پیغام(sid, data) {
-    لکھو(`پیغام از ${sid}: ${data["متن"]}`);
-    // تمام کو نشر کریں
-    انتظار sio.نشر("نیا_پیغام", { "از": sid, "متن": data["متن"] });
+فنکشن پیغام(sid, data) {
+    غیر_متزامن_چلائیں(sio.نشر("نیا_پیغام", { "از": sid, "متن": data["متن"] }));
 }
 
-// ─── کمرے میں شامل ───────────────────────────────────────
-@sio.پر("کمرہ_شامل")
-غیر_متزامن فنکشن کمرہ_شامل(sid, data) {
-    متغیر کمرہ = data["کمرہ"];
-    انتظار sio.کمرہ_میں_شامل(sid, کمرہ);
-    لکھو(`${sid} نے کمرہ "${کمرہ}" جوائن کیا`);
-    // صرف کمرے کے افراد کو
-    انتظار sio.بھیجو("کمرہ_پیغام", { "پیغام": "نیا رکن آیا!" }, کمرہ=کمرہ);
-}
-
-// ─── کمرے سے پیغام ───────────────────────────────────────
-@sio.پر("کمرہ_پیغام")
-غیر_متزامن فنکشن کمرہ_پیغام(sid, data) {
-    متغیر کمرہ = data["کمرہ"];
-    انتظار sio.بھیجو("پیغام_ملا", { "از": sid, "متن": data["متن"] }, کمرہ=کمرہ, مستثنی=sid);
-}
-
-// ─── منقطع ───────────────────────────────────────────────
 @sio.پر_منقطع()
-غیر_متزامن فنکشن منقطع(sid) {
+فنکشن منقطع(sid) {
     لکھو(`منقطع: ${sid}`);
 }
 
-// ─── FastAPI راستہ ────────────────────────────────────────
 @ایپ.حاصل("/")
 فنکشن جڑ() {
     واپس نیا جیسن_جواب({ "پیغام": "Socket.IO سرور" });
 }
 
-// ─── ASGI ایپ چلائیں ─────────────────────────────────────
-sio.چلائیں(ایپ, میزبان="0.0.0.0", پورٹ=8000);
+sio.چلائیں(ایپ, پورٹ=8000);
+```
+
+> **FastAPI note:** Socket.IO handlers کو sync رکھیں اور `غیر_متزامن_چلائیں()` سے emit کریں۔ اگر handlers کو `غیر_متزامن فنکشن` بنایا تو transpiler پورے module کو `asyncio.run()` میں لپیٹ دیتا ہے جو uvicorn کے event loop سے ٹکراتا ہے۔
+
+---
+
+### Socket.IO با Flask (WSGI)
+
+```urdu
+درآمد { ساکٹ_آئی_او, فلاسک, فلاسک_جواب } سے "اردو/ویب";
+
+متغیر ایپ = نیا فلاسک();
+متغیر sio  = نیا ساکٹ_آئی_او(ایپ=ایپ);   // خود بخود WSGI threading موڈ
+
+@sio.پر_جڑنا()
+فنکشن جڑنا(sid, environ) {
+    لکھو("جڑا: " + sid);
+
+@sio.پر("پیغام")
+فنکشن پیغام(sid, data) {
+    sio.بھیجو("جواب", { "متن": data["متن"] }, کمرہ=sid);
+}
+
+@ایپ.حاصل("/")
+فنکشن گھر() {
+    واپس فلاسک_جواب("Socket.IO Flask سرور");
+}
+
+sio.چلائیں(ایپ, پورٹ=5000);
+```
+
+> **Flask note:** Flask کے ساتھ `بھیجو` اور `نشر` sync ہیں — `انتظار` یا `غیر_متزامن_چلائیں` کی ضرورت نہیں۔
+
+---
+
+### Socket.IO با Django (WSGI)
+
+```urdu
+درآمد { ساکٹ_آئی_او, ڈجانگو } سے "اردو/ویب";
+
+متغیر ایپ = نیا ڈجانگو({ "ڈیبگ": سچ });
+ایپ.ترتیب_دیں();
+متغیر sio  = نیا ساکٹ_آئی_او(ایپ=ایپ);   // خود بخود WSGI threading موڈ
+
+@sio.پر_جڑنا()
+فنکشن جڑنا(sid, environ) {
+    لکھو("جڑا: " + sid);
+}
+
+@sio.پر("پیغام")
+فنکشن پیغام(sid, data) {
+    sio.نشر("نیا_پیغام", data);
+}
+
+sio.چلائیں(ایپ, پورٹ=8000);
 ```
 
 ---
 
-### Socket.IO: Namespace Example
+### Socket.IO: Namespaces
 
 ```urdu
 درآمد { ساکٹ_آئی_او, فاسٹ_اے_پی_آئی } سے "اردو/ویب";
+درآمد { غیر_متزامن_چلائیں } سے "اردو/دھاگہ";
 
 متغیر ایپ = نیا فاسٹ_اے_پی_آئی({ عنوان: "نام_فضا API" });
-متغیر sio  = نیا ساکٹ_آئی_او();
+متغیر sio  = نیا ساکٹ_آئی_او(ایپ=ایپ);
 
-// پہلی نام فضا — چیٹ
 @sio.پر("connect", نام_فضا="/چیٹ")
-غیر_متزامن فنکشن چیٹ_جڑنا(sid, environ) {
+فنکشن چیٹ_جڑنا(sid, environ) {
     لکھو(`چیٹ نام_فضا: ${sid} جڑا`);
 }
 
 @sio.پر("پیغام", نام_فضا="/چیٹ")
-غیر_متزامن فنکشن چیٹ_پیغام(sid, data) {
-    انتظار sio.نشر("نیا_پیغام", data, نام_فضا="/چیٹ");
+فنکشن چیٹ_پیغام(sid, data) {
+    غیر_متزامن_چلائیں(sio.نشر("نیا_پیغام", data, نام_فضا="/چیٹ"));
 }
 
-// دوسری نام فضا — اطلاعات
 @sio.پر("connect", نام_فضا="/اطلاعات")
-غیر_متزامن فنکشن اطلاعات_جڑنا(sid, environ) {
+فنکشن اطلاعات_جڑنا(sid, environ) {
     لکھو(`اطلاعات نام_فضا: ${sid} جڑا`);
 }
 

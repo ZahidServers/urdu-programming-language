@@ -1,0 +1,114 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}نیا بل{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>نیا بل بنائیں</h1>
+
+{% اگر نہیں customers %}
+<div class="card">
+  <div class="empty">
+    <p>بل بنانے کے لیے پہلے ایک گاہک شامل کریں۔</p>
+    <a href="/customers/new" class="btn btn-success">گاہک شامل کریں</a>
+  </div>
+</div>
+{% ورنہ %}
+
+<div class="card">
+  <form method="POST" action="/invoices/new" id="inv-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="customer_id">گاہک <span style="color:#e74c3c">*</span></label>
+        <select id="customer_id" name="customer_id" required>
+          <option value="">— گاہک چنیں —</option>
+          {% کے_لیے c کا customers %}
+          <option value="{{ c.id }}">{{ c.name }}</option>
+          {% کے_لیے_ختم %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="date">تاریخ <span style="color:#e74c3c">*</span></label>
+        <input type="date" id="date" name="date" required>
+      </div>
+      <div class="form-group full">
+        <label for="notes">نوٹس</label>
+        <input type="text" id="notes" name="notes" placeholder="اختیاری نوٹ...">
+      </div>
+    </div>
+
+    <h2 style="margin-top:.5rem">اشیاء</h2>
+
+    <div class="table-wrap" style="margin-bottom:1rem;">
+      <table>
+        <thead>
+          <tr class="items-header">
+            <th style="width:50%">تفصیل</th>
+            <th style="width:15%">مقدار</th>
+            <th style="width:20%">فی اکائی قیمت (₹)</th>
+            <th style="width:15%">رقم</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody id="items-body">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <button type="button" class="btn btn-secondary btn-sm" onclick="addRow()">+ قطار شامل کریں</button>
+
+    <div class="total-section" style="margin-top:1.25rem;">
+      <span style="font-size:1rem; color:#555;">کل رقم: </span>
+      <span class="total-amount" id="grand-total">₹0.00</span>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success">بل محفوظ کریں</button>
+      <a href="/invoices" class="btn btn-secondary">منسوخ</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.getElementById('date').valueAsDate = new Date();
+
+  function addRow() {
+    var tbody = document.getElementById('items-body');
+    var tr = document.createElement('tr');
+    tr.className = 'item-row';
+    tr.innerHTML =
+      '<td><input type="text" name="item_name" placeholder="چیز کا نام" style="width:100%"></td>' +
+      '<td><input type="number" name="item_qty" value="1" min="0.01" step="0.01" style="width:100%" oninput="calcRow(this)"></td>' +
+      '<td><input type="number" name="item_price" value="0" min="0" step="0.01" style="width:100%" oninput="calcRow(this)"></td>' +
+      '<td class="row-amt">₹0.00</td>' +
+      '<td><button type="button" onclick="removeRow(this)" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:1.1rem;">&#x2715;</button></td>';
+    tbody.appendChild(tr);
+    updateTotal();
+  }
+
+  function removeRow(btn) {
+    btn.closest('tr').remove();
+    updateTotal();
+  }
+
+  function calcRow(input) {
+    var tr = input.closest('tr');
+    var qty = parseFloat(tr.querySelector('[name=item_qty]').value) || 0;
+    var price = parseFloat(tr.querySelector('[name=item_price]').value) || 0;
+    tr.querySelector('.row-amt').textContent = '₹' + (qty * price).toFixed(2);
+    updateTotal();
+  }
+
+  function updateTotal() {
+    var total = 0;
+    document.querySelectorAll('.item-row').forEach(function(tr) {
+      var qty = parseFloat(tr.querySelector('[name=item_qty]').value) || 0;
+      var price = parseFloat(tr.querySelector('[name=item_price]').value) || 0;
+      total += qty * price;
+    });
+    document.getElementById('grand-total').textContent = '₹' + total.toFixed(2);
+  }
+
+  addRow(); addRow(); addRow();
+</script>
+{% اگر_ختم %}
+{% بلاک_ختم %}

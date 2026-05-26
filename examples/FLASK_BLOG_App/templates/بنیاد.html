@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% بلاک عنوان %}اردو بلاگ{% بلاک_ختم %}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    direction: rtl;
+    min-height: 100vh;
+  }
+  nav {
+    background: #2c3e50;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 0.4rem 0.9rem;
+    border-radius: 5px;
+    font-size: 0.95rem;
+  }
+  nav a:hover { background: #34495e; }
+  .لوگو { font-size: 1.4rem; font-weight: bold; color: #e74c3c; }
+  .کنٹینر { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+  h1 { color: #2c3e50; margin-bottom: 1.5rem; font-size: 1.8rem; }
+  .کارڈ {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border-right: 4px solid #e74c3c;
+  }
+  .کارڈ h2 { font-size: 1.25rem; margin-bottom: 0.4rem; }
+  .کارڈ h2 a { color: #2c3e50; text-decoration: none; }
+  .کارڈ h2 a:hover { color: #e74c3c; }
+  .کارڈ h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .میٹا { color: #999; font-size: 0.85rem; margin-bottom: 0.8rem; }
+  .متن {
+    color: #444;
+    line-height: 1.75;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .پوری { color: #333; line-height: 1.9; white-space: pre-wrap; }
+  .بٹن {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 0.8rem;
+    margin-left: 0.5rem;
+  }
+  .بٹن:hover { background: #c0392b; }
+  .بٹن.ثانوی { background: #7f8c8d; }
+  .بٹن.ثانوی:hover { background: #636e72; }
+  .فارم label {
+    display: block;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.4rem;
+    margin-top: 1rem;
+  }
+  .فارم input, .فارم textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    direction: rtl;
+    outline: none;
+    font-family: inherit;
+  }
+  .فارم input:focus, .فارم textarea:focus { border-color: #e74c3c; }
+  .فارم textarea { min-height: 160px; resize: vertical; }
+  .خالی { text-align: center; padding: 4rem 1rem; color: #888; }
+  .خالی p { margin-bottom: 1rem; font-size: 1.1rem; }
+  .شمار { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+<nav>
+  <span class="لوگو">اردو بلاگ</span>
+  <div>
+    <a href="/">گھر</a>
+    <a href="/نئی_پوسٹ">+ نئی پوسٹ</a>
+  </div>
+</nav>
+<div class="کنٹینر">
+  {% بلاک مواد %}{% بلاک_ختم %}
+</div>
+</body>
+</html>

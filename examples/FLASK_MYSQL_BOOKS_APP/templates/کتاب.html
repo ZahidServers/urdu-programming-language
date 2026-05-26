@@ -1,0 +1,38 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}{{ کتاب.title }} — اردو کتب خانہ{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div style="margin-bottom:1.25rem;">
+  <a href="/" class="بٹن بٹن-ثانوی">← واپس فہرست</a>
+</div>
+
+<div class="کارڈ">
+  <div style="border-right: 5px solid #6c5ce7; padding-right: 1.25rem; margin-bottom: 1.5rem;">
+    <h1 style="margin-bottom:.4rem;">{{ کتاب.title }}</h1>
+    <div style="color:#636e72; font-size:1rem;">✍ <strong>{{ کتاب.author }}</strong></div>
+  </div>
+
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+    {% اگر کتاب.category %}
+    <div style="background:#eee8ff; color:#6c5ce7; padding:.35rem .9rem; border-radius:20px; font-size:.88rem; font-weight:600;">
+      {{ کتاب.category }}
+    </div>
+    {% اگر_ختم %}
+    {% اگر کتاب.year %}
+    <div style="background:#f0f0f0; color:#636e72; padding:.35rem .9rem; border-radius:20px; font-size:.88rem;">
+      📅 {{ کتاب.year }}
+    </div>
+    {% اگر_ختم %}
+  </div>
+
+  {% اگر کتاب.summary %}
+  <h2>خلاصہ</h2>
+  <p style="color:#444; line-height:1.85; font-size:.97rem;">{{ کتاب.summary }}</p>
+  {% اگر_ختم %}
+
+  <div style="margin-top:2rem; padding-top:1.25rem; border-top:1px solid #eee; display:flex; gap:.75rem;">
+    <a href="/" class="بٹن بٹن-ثانوی">فہرست پر واپس</a>
+    <a href="/شامل" class="بٹن بٹن-کامیاب">+ نئی کتاب</a>
+  </div>
+</div>
+{% بلاک_ختم %}

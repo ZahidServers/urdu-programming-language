@@ -286,7 +286,7 @@ class ایس_کیو_لائٹ(_UrduDB):
     async def جوڑیں(self):
         import sqlite3
         path = self._config.get("فائل", ":memory:")
-        self._conn = sqlite3.connect(path, isolation_level=None)  # manual transaction mode
+        self._conn = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._connected = True
         return self

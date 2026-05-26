@@ -1,0 +1,51 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}بل{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h1 style="margin-bottom:0">تمام بل</h1>
+  <a href="/invoices/new" class="btn btn-success">+ نیا بل</a>
+</div>
+
+<div class="card">
+  {% اگر items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>بل نمبر</th>
+          <th>گاہک</th>
+          <th>تاریخ</th>
+          <th>رقم</th>
+          <th>حالت</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% کے_لیے inv کا items %}
+        <tr>
+          <td><strong>BL-{{ "%03d" % inv.id }}</strong></td>
+          <td>{{ inv.name }}</td>
+          <td>{{ inv.date }}</td>
+          <td>₹{{ "%.2f" % inv.total }}</td>
+          <td>
+            {% اگر inv.status == 'paid' %}
+            <span class="badge badge-paid">ادا شدہ</span>
+            {% ورنہ %}
+            <span class="badge badge-pending">زیر التواء</span>
+            {% اگر_ختم %}
+          </td>
+          <td><a href="/invoices/{{ inv.id }}" class="btn btn-sm btn-primary">دیکھیں</a></td>
+        </tr>
+        {% کے_لیے_ختم %}
+      </tbody>
+    </table>
+  </div>
+  {% ورنہ %}
+  <div class="empty">
+    <p>ابھی کوئی بل نہیں۔</p>
+    <a href="/invoices/new" class="btn btn-success">پہلا بل بنائیں</a>
+  </div>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

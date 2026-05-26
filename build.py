@@ -15,12 +15,19 @@ Usage:
 from __future__ import annotations
 import sys
 import io
+import shutil
 import subprocess
 import importlib
 import argparse
 from pathlib import Path
 
 HERE = Path(__file__).parent
+
+# ─── Post-build paths (edit if yours differ) ─────────────────────────────────
+
+ICO          = HERE / "URDU_ICO.ico"
+ANACONDA_BIN = Path(r"C:\ProgramData\anaconda3\Library\bin")
+VCRUNTIME    = Path(r"C:\Windows\System32\vcruntime140_threads.dll")
 
 
 # ─── Fix stdout for Urdu output on Windows ───────────────────────────────────
@@ -154,6 +161,35 @@ def _filter(pkg_dict: dict) -> tuple[list[str], list[tuple[str, str]]]:
     return ok, skip
 
 
+# ─── Post-build steps ────────────────────────────────────────────────────────
+
+def _post_build(exe: Path, standalone: bool) -> None:
+    """Copy DLLs that Nuitka missed into the dist folder."""
+    dist_folder = exe.parent
+
+    if not standalone:
+        return
+
+    # 1. All Anaconda Library/bin DLLs Nuitka may have missed
+    if ANACONDA_BIN.is_dir():
+        copied = 0
+        for dll in ANACONDA_BIN.glob("*.dll"):
+            dest = dist_folder / dll.name
+            if not dest.exists():
+                shutil.copy2(dll, dest)
+                copied += 1
+        print(f"  Anaconda DLLs کاپی    : {copied} نئی فائلیں")
+    else:
+        print(f"  ⚠ Anaconda bin نہیں ملا: {ANACONDA_BIN}")
+
+    # 2. vcruntime140_threads.dll from System32
+    if VCRUNTIME.exists():
+        shutil.copy2(VCRUNTIME, dist_folder / VCRUNTIME.name)
+        print(f"  vcruntime140_threads  : کاپی ✓")
+    else:
+        print(f"  ⚠ vcruntime140_threads.dll نہیں ملا: {VCRUNTIME}")
+
+
 # ─── Build ────────────────────────────────────────────────────────────────────
 
 def build(fast: bool = False, onefile: bool = False,
@@ -186,6 +222,14 @@ def build(fast: bool = False, onefile: bool = False,
         "--output-dir=dist",
         "--output-filename=urdu.exe",
         "--windows-console-mode=attach",
+        # icon + version branding (embedded by Nuitka at compile time)
+        f"--windows-icon-from-ico={ICO}",
+        "--windows-file-version=1.0.0.0",
+        "--windows-product-version=1.0.0.0",
+        "--windows-file-description=Urdu Programming Language Runtime Engine",
+        "--windows-company-name=Webaon",
+        "--windows-product-name=Urdu",
+        "--copyright=© 2026 Webaon. All rights reserved.",
         "--lto=no",
         "--jobs=4",
         "--noinclude-unittest-mode=nofollow",
@@ -207,6 +251,8 @@ def build(fast: bool = False, onefile: bool = False,
         # ffi.dll is _ctypes.pyd's libffi dependency; Nuitka misses it because
         # Anaconda keeps it in Library/bin rather than DLLs/
         r"--include-data-file=C:\ProgramData\anaconda3\Library\bin\ffi.dll=ffi.dll",
+        # sqlite3.dll is _sqlite3.pyd's dependency; same Anaconda Library/bin pattern
+        r"--include-data-file=C:\ProgramData\anaconda3\Library\bin\sqlite3.dll=sqlite3.dll",
         "--include-module=ssl",
         "--include-module=hashlib",
         *[f"--include-package={p}" for p in all_pkgs],
@@ -261,6 +307,11 @@ def build(fast: bool = False, onefile: bool = False,
                 print(f"  فولڈر   : {folder}")
                 print(f"  کل سائز : {total / 1_048_576:.0f} MB")
                 print(f"  exe     : {exe}")
+
+            print()
+            print("  بعد از بناوٹ...")
+            _post_build(exe, standalone=not onefile)
+
         print()
         print("  استعمال:")
         print("    urdu.exe run my_program.urdu")

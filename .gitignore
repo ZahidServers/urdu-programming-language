@@ -72,3 +72,7 @@ examples/*.json
 examples/*.csv
 examples/*.xlsx
 examples/*.zip
+tests/*.json
+tests/*.csv
+tests/*.xlsx
+tests/*.zip

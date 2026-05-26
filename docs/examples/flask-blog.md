@@ -1,8 +1,8 @@
 # Flask Blog App — اردو بلاگ
 
-A complete multi-page blog application built with Flask. Demonstrates HTML responses, form handling, GET/POST routes, in-memory data storage, and RTL Urdu UI.
+A complete multi-page blog application built with Flask and Urdu Jinja2 templates. Demonstrates template inheritance, Urdu template keywords, form handling, GET/POST routes, and RTL Urdu UI.
 
-> **اردو:** Flask سے بنی ایک مکمل بلاگ ایپلیکیشن۔ یہ مثال HTML جوابات، فارم ہینڈلنگ، GET/POST راستے، ان میموری ڈیٹا اسٹوریج، اور اردو RTL UI ظاہر کرتی ہے۔
+> **اردو:** Flask اور اردو Jinja2 سانچوں سے بنی ایک مکمل بلاگ ایپلیکیشن۔ یہ مثال سانچہ وراثت، اردو ٹیگ کلیدی الفاظ، فارم ہینڈلنگ، GET/POST راستے اور اردو RTL UI ظاہر کرتی ہے۔
 
 ---
 
@@ -22,11 +22,27 @@ Then open: **http://localhost:5000**
 
 | Feature | Description |
 |---------|-------------|
-| Home page | Lists all posts with 3-line excerpt (CSS clamp) |
+| Urdu Jinja2 templates | All `.html` files use Urdu tag keywords (`{% اگر %}`, `{% کے_لیے %}`, `{% توسیع %}`) |
+| Template inheritance | `گھر.html`, `پوسٹ.html`, `نئی_پوسٹ.html` all extend `بنیاد.html` |
+| Home page | Lists all posts with 3-line excerpt (CSS clamp) and post count via `\|طول` filter |
 | Post detail | Full post view at `/پوسٹ/<id>` |
 | New post form | Write and publish a post at `/نئی_پوسٹ` |
 | In-memory storage | Posts stored in a list — resets on restart |
 | RTL Urdu UI | Full right-to-left layout with Urdu CSS class names |
+
+---
+
+## File Structure
+
+```
+examples/FLASK_BLOG_App/
+  app.urdu                ← main application
+  templates/
+    بنیاد.html            ← base layout (nav, CSS)
+    گھر.html              ← home page: list all posts
+    پوسٹ.html             ← single post view
+    نئی_پوسٹ.html         ← new post form
+```
 
 ---
 
@@ -35,23 +51,22 @@ Then open: **http://localhost:5000**
 ### 1. Imports and App Setup
 
 ```urdu
-درآمد { فلاسک, فلاسک_جواب, فلاسک_رجوع } سے "اردو/ویب";
+درآمد { فلاسک, فلاسک_سانچہ, فلاسک_جواب, فلاسک_رجوع } سے "اردو/ویب";
 درآمد { فلاسک_درخواست } سے "اردو/ویب";
 
 متغیر ایپ = نیا فلاسک();
 ```
 
-- `فلاسک` — Flask app wrapper
-- `فلاسک_جواب(html, status, mime)` — build a custom HTTP response
+- `فلاسک` — Flask app wrapper; automatically enables Urdu Jinja2 template preprocessing
+- `فلاسک_سانچہ(template, **ctx)` — render a Jinja2 template from `templates/`
 - `فلاسک_رجوع(url)` — HTTP redirect (302)
-- `فلاسک_درخواست()` — returns the current Flask request object (for form data, query params)
+- `فلاسک_درخواست()` — returns the current Flask request object
 
 ---
 
 ### 2. In-Memory Data Store
 
 ```urdu
-// شمار کو dict میں رکھا تاکہ فنکشن میں بھی تبدیل ہو
 متغیر حالت = { "اگلا": 1 };
 متغیر پوسٹیں = [];
 
@@ -62,127 +77,126 @@ Then open: **http://localhost:5000**
 }
 ```
 
-**Why a dict for the counter?**  
-Inside a function, assigning to a plain variable (`اگلا = اگلا + 1`) would create a local variable and not update the global. Mutating a dict value (`حالت["اگلا"] = ...`) modifies the global dict in-place — no `global` keyword needed.
-
-**Why `list.append()`?**  
-Urdu PL transpiles to Python, so all Python list and dict methods work directly on runtime objects.
+**Why a dict for the counter?** Inside a function, assigning to a plain variable creates a local copy. Mutating a dict value (`حالت["اگلا"] = ...`) modifies the global dict in-place — no `global` keyword needed.
 
 ---
 
-### 3. Base HTML Layout Function
+### 3. Base Template — `بنیاد.html`
 
-```urdu
-متغیر طرز = `<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { direction: rtl; ... }
-  .کارڈ { border-right: 4px solid #e74c3c; ... }
-  ...
-</style>`;
-
-فنکشن بیس(عنوان_صفحہ, مواد) {
-    واپس `<!DOCTYPE html>
+```html
+<!DOCTYPE html>
 <html dir="rtl" lang="ur">
 <head>
-  <title>${عنوان_صفحہ} — اردو بلاگ</title>
-  ${طرز}
+  <title>{% بلاک عنوان %}اردو بلاگ{% بلاک_ختم %}</title>
+  <style>
+    body { direction: rtl; }
+    .کارڈ { border-right: 4px solid #e74c3c; }
+    ...
+  </style>
 </head>
 <body>
-  <nav>...</nav>
-  <div class="کنٹینر">${مواد}</div>
+<nav>
+  <span class="لوگو">اردو بلاگ</span>
+  <a href="/">گھر</a>
+  <a href="/نئی_پوسٹ">+ نئی پوسٹ</a>
+</nav>
+<div class="کنٹینر">
+  {% بلاک مواد %}{% بلاک_ختم %}
+</div>
 </body>
-</html>`;
-}
+</html>
 ```
 
-**Key points:**
-- Template literals (backtick strings) support multi-line HTML
-- `${variable}` is the interpolation syntax
-- CSS `{` and `}` characters are handled automatically by the transpiler
-- `dir="rtl"` and `direction: rtl` for right-to-left Urdu text
-- Urdu words are valid CSS class names (`.کارڈ`, `.بٹن`, `.میٹا`)
+- `{% بلاک عنوان %}` / `{% بلاک مواد %}` — named blocks that child templates override
+- `{% بلاک_ختم %}` — closes a block (`{% endblock %}`)
+- Urdu words are valid CSS class names (`.کارڈ`, `.لوگو`, `.کنٹینر`)
 
 ---
 
-### 4. Home Page Route
+### 4. Home Template — `گھر.html`
+
+```html
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}گھر — اردو بلاگ{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>تازہ پوسٹیں</h1>
+
+{% اگر پوسٹیں %}
+<p class="شمار">کل {{ پوسٹیں|طول }} پوسٹیں</p>
+
+{% کے_لیے پ کا پوسٹیں %}
+<div class="کارڈ">
+  <h2><a href="/پوسٹ/{{ پ.شناخت }}">{{ پ.عنوان }}</a></h2>
+  <div class="میٹا">✍ {{ پ.مصنف }}</div>
+  <p class="متن">{{ پ.متن }}</p>
+  <a href="/پوسٹ/{{ پ.شناخت }}" class="بٹن">مزید پڑھیں</a>
+</div>
+{% کے_لیے_ختم %}
+
+{% ورنہ %}
+<div class="خالی">
+  <p>ابھی کوئی پوسٹ نہیں۔</p>
+  <a href="/نئی_پوسٹ" class="بٹن">پہلی پوسٹ لکھیں</a>
+</div>
+{% اگر_ختم %}
+{% بلاک_ختم %}
+```
+
+**Key Urdu template keywords used:**
+
+| کلیدی لفظ | کام |
+|-----------|-----|
+| `{% توسیع "..." %}` | inherit from base template |
+| `{% بلاک نام %}` | define/override a named block |
+| `{% بلاک_ختم %}` | end a block |
+| `{% اگر پوسٹیں %}` | conditional — truthy check |
+| `{% ورنہ %}` | else branch |
+| `{% اگر_ختم %}` | end if |
+| `{% کے_لیے پ کا پوسٹیں %}` | for loop |
+| `{% کے_لیے_ختم %}` | end for |
+| `{{ پوسٹیں\|طول }}` | `length` filter |
+
+---
+
+### 5. Route Handlers
 
 ```urdu
+// گھر — تمام پوسٹیں
 @ایپ.حاصل("/")
 فنکشن گھر() {
-    متغیر کارڈز = "";
-    کے_لیے (متغیر پ کا پوسٹیں) {
-        متغیر شناخت = پ["شناخت"];
-        متغیر عنوان = پ["عنوان"];
-        متغیر مصنف = پ["مصنف"];
-        متغیر خلاصہ = پ["متن"];
-        کارڈز = کارڈز + `<div class="کارڈ">
-  <h2><a href="/پوسٹ/${شناخت}">${عنوان}</a></h2>
-  <div class="میٹا">✍ ${مصنف}</div>
-  <p class="متن">${خلاصہ}</p>
-  <a href="/پوسٹ/${شناخت}" class="بٹن">مزید پڑھیں</a>
-</div>`;
-    }
-    متغیر مواد = `<h1>تازہ پوسٹیں</h1>${کارڈز}`;
-    واپس فلاسک_جواب(بیس("گھر", مواد), 200, "text/html; charset=utf-8");
+    واپس فلاسک_سانچہ("گھر.html", پوسٹیں=پوسٹیں);
 }
-```
 
-**Excerpt truncation:** Instead of string slicing (Urdu PL's parser does not support `[start:end]` slice notation), the CSS property `-webkit-line-clamp: 3` is used to visually truncate long posts to 3 lines with an ellipsis.
-
----
-
-### 5. Post Detail Route
-
-```urdu
+// پوسٹ دیکھیں
 @ایپ.حاصل("/پوسٹ/<pid>")
 فنکشن پوسٹ_دیکھیں(pid) {
     متغیر نمبر = int(pid);
-    متغیر ملی = جھوٹ;
-    متغیر پ_عنوان = "";
-    متغیر پ_متن = "";
-    متغیر پ_مصنف = "";
+    متغیر پوسٹ = خالی;
     کے_لیے (متغیر پ کا پوسٹیں) {
         اگر (پ["شناخت"] == نمبر) {
-            پ_عنوان = پ["عنوان"];
-            پ_متن = پ["متن"];
-            پ_مصنف = پ["مصنف"];
-            ملی = سچ;
+            پوسٹ = پ;
         }
     }
-    اگر (ملی == جھوٹ) {
-        واپس فلاسک_جواب(بیس("غلطی", مواد_خطا), 404, "text/html; charset=utf-8");
+    اگر (پوسٹ == خالی) {
+        واپس فلاسک_جواب("پوسٹ نہیں ملی", 404, "text/plain; charset=utf-8");
     }
-    ...
+    واپس فلاسک_سانچہ("پوسٹ.html", پوسٹ=پوسٹ);
 }
-```
 
-**Important:** Flask's URL route parameters must use ASCII names (e.g. `<pid>`). Urdu characters inside `< >` cause a Werkzeug "malformed url rule" error. The ASCII parameter is then used normally inside the function body.
-
----
-
-### 6. New Post: GET Form + POST Save
-
-```urdu
-// ─── فارم دکھائیں ─────────────────────────────────
+// نئی پوسٹ فارم
 @ایپ.حاصل("/نئی_پوسٹ")
 فنکشن نئی_فارم() {
-    متغیر مواد = `<form method="POST" action="/نئی_پوسٹ" class="فارم">
-    <label for="عنوان">عنوان</label>
-    <input type="text" name="عنوان" required />
-    <label for="متن">پوسٹ</label>
-    <textarea name="متن" required></textarea>
-    <button type="submit" class="بٹن">شائع کریں</button>
-</form>`;
-    واپس فلاسک_جواب(بیس("نئی پوسٹ", مواد), 200, "text/html; charset=utf-8");
+    واپس فلاسک_سانچہ("نئی_پوسٹ.html");
 }
 
-// ─── فارم محفوظ کریں ──────────────────────────────
+// نئی پوسٹ محفوظ
 @ایپ.بھیجیں("/نئی_پوسٹ")
 فنکشن نئی_محفوظ() {
     متغیر درخواست = فلاسک_درخواست();
     متغیر عنوان = درخواست.form.get("عنوان", "بے عنوان");
-    متغیر متن   = درخواست.form.get("متن", "");
-    متغیر مصنف  = درخواست.form.get("مصنف", "گمنام");
+    متغیر متن = درخواست.form.get("متن", "");
+    متغیر مصنف = درخواست.form.get("مصنف", "گمنام");
     اگر (len(متن) > 0) {
         پوسٹ_شامل(عنوان, متن, مصنف);
     }
@@ -190,20 +204,19 @@ Urdu PL transpiles to Python, so all Python list and dict methods work directly 
 }
 ```
 
-- `@ایپ.حاصل` → GET route
-- `@ایپ.بھیجیں` → POST route
-- `فلاسک_درخواست()` returns Flask's `request` proxy; `.form.get(key, default)` reads submitted form fields
-- `فلاسک_رجوع("/")` redirects back to the home page after saving
+- `فلاسک_سانچہ("گھر.html", پوسٹیں=پوسٹیں)` — renders `templates/گھر.html`; keyword arguments become template variables
+- `فلاسک_درخواست().form.get(key, default)` — reads submitted form fields
+- Flask URL route params must use ASCII names (e.g. `<pid>`); Urdu inside `< >` causes a Werkzeug error
 
 ---
 
-### 7. Run the Server
+### 6. Run the Server
 
 ```urdu
 ایپ.چلائیں(پورٹ=5000, ڈیبگ=جھوٹ);
 ```
 
-`ڈیبگ=جھوٹ` disables Flask's debug/reloader. Set `ڈیبگ=سچ` during development to see errors in the browser.
+`ڈیبگ=سچ` enables Flask's auto-reloader and error pages in the browser.
 
 ---
 
@@ -211,18 +224,9 @@ Urdu PL transpiles to Python, so all Python list and dict methods work directly 
 
 | Limitation | Reason | Workaround |
 |------------|--------|------------|
-| Slice notation `[0:130]` unsupported | Urdu PL parser treats `:` inside `[]` as syntax error | Use CSS `-webkit-line-clamp` for visual truncation |
 | URL route params must be ASCII | Werkzeug rejects non-ASCII inside `< >` | Use `<pid>`, `<id>`, etc. |
-| No persistence | In-memory storage only | Integrate `اردو/ڈیٹا_بیس` for SQLite/PostgreSQL |
-
----
-
-## File Structure
-
-```
-examples/FLASK_BLOG_App/
-  app.urdu     ← main application (this file)
-```
+| No persistence | In-memory storage only | Integrate `اردو/ڈیٹا_بیس` for SQLite |
+| Template files use `.html` extension | Jinja2 finds files by name | Name templates with Urdu filenames — both work |
 
 ---
 
@@ -231,4 +235,4 @@ examples/FLASK_BLOG_App/
 - Add a delete post route (`@ایپ.بھیجیں("/حذف/<pid>")`)
 - Connect to a real database using `اردو/ڈیٹا_بیس`
 - Add user authentication with sessions (`فلاسک_نشست`)
-- Move HTML to Jinja2 templates using `فلاسک_سانچہ`
+- Add pagination using `لوپ.اشاریہ` and Jinja2 slice filters

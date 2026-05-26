@@ -1,0 +1,68 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}ڈیش بورڈ{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>ڈیش بورڈ</h1>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">کل گاہکان</div>
+    <div class="stat-value">{{ customers }}</div>
+  </div>
+  <div class="stat purple">
+    <div class="stat-label">کل بل</div>
+    <div class="stat-value">{{ invoices }}</div>
+  </div>
+  <div class="stat orange">
+    <div class="stat-label">زیر التواء</div>
+    <div class="stat-value rupee">{{ "%.2f" % pending }}</div>
+  </div>
+  <div class="stat green">
+    <div class="stat-label">ادا شدہ</div>
+    <div class="stat-value rupee">{{ "%.2f" % paid }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>حالیہ بل</h2>
+  {% اگر recent %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>گاہک</th>
+          <th>تاریخ</th>
+          <th>رقم</th>
+          <th>حالت</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% کے_لیے row کا recent %}
+        <tr>
+          <td>BL-{{ "%03d" % row.id }}</td>
+          <td>{{ row.name }}</td>
+          <td>{{ row.date }}</td>
+          <td>₹{{ "%.2f" % row.total }}</td>
+          <td>
+            {% اگر row.status == 'paid' %}
+            <span class="badge badge-paid">ادا شدہ</span>
+            {% ورنہ %}
+            <span class="badge badge-pending">زیر التواء</span>
+            {% اگر_ختم %}
+          </td>
+          <td><a href="/invoices/{{ row.id }}" class="btn btn-sm btn-primary">دیکھیں</a></td>
+        </tr>
+        {% کے_لیے_ختم %}
+      </tbody>
+    </table>
+  </div>
+  {% ورنہ %}
+  <div class="empty">
+    <p>ابھی کوئی بل نہیں۔</p>
+    <a href="/invoices/new" class="btn btn-success">پہلا بل بنائیں</a>
+  </div>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

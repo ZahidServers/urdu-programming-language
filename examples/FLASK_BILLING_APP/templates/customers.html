@@ -1,0 +1,41 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}گاہکان{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h1 style="margin-bottom:0">گاہکان</h1>
+  <a href="/customers/new" class="btn btn-success">+ نیا گاہک</a>
+</div>
+
+<div class="card">
+  {% اگر items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>نام</th>
+          <th>فون</th>
+          <th>ای میل</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% کے_لیے c کا items %}
+        <tr>
+          <td>{{ لوپ.اشاریہ }}</td>
+          <td><strong>{{ c.name }}</strong></td>
+          <td>{{ c.phone or '—' }}</td>
+          <td>{{ c.email or '—' }}</td>
+        </tr>
+        {% کے_لیے_ختم %}
+      </tbody>
+    </table>
+  </div>
+  {% ورنہ %}
+  <div class="empty">
+    <p>کوئی گاہک نہیں۔</p>
+    <a href="/customers/new" class="btn btn-success">پہلا گاہک شامل کریں</a>
+  </div>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

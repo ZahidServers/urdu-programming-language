@@ -1,18 +1,17 @@
 // ══════════════════════════════════════════════════════════════
-// اردو بلاگ ایپلیکیشن — Flask
+// اردو بلاگ ایپلیکیشن — Flask + Jinja2 اردو سانچے
 //
 // pip install flask
 // urdu run app.urdu
 // براؤزر میں کھولیں: http://localhost:5000
 // ══════════════════════════════════════════════════════════════
 
-درآمد { فلاسک, فلاسک_جواب, فلاسک_رجوع } سے "اردو/ویب";
+درآمد { فلاسک, فلاسک_سانچہ, فلاسک_جواب, فلاسک_رجوع } سے "اردو/ویب";
 درآمد { فلاسک_درخواست } سے "اردو/ویب";
 
 متغیر ایپ = نیا فلاسک();
 
 // ─── ڈیٹا ────────────────────────────────────────────────────
-// شمار کو dict میں رکھا تاکہ فنکشن میں بھی تبدیل ہو
 متغیر حالت = { "اگلا": 1 };
 متغیر پوسٹیں = [];
 
@@ -39,141 +38,10 @@
     "زید خان"
 );
 
-// ─── CSS ──────────────────────────────────────────────────────
-متغیر طرز = `<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f0f2f5;
-    color: #222;
-    direction: rtl;
-    min-height: 100vh;
-  }
-  nav {
-    background: #2c3e50;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  nav a {
-    color: #ecf0f1;
-    text-decoration: none;
-    padding: 0.4rem 0.9rem;
-    border-radius: 5px;
-    font-size: 0.95rem;
-  }
-  nav a:hover { background: #34495e; }
-  .لوگو { font-size: 1.4rem; font-weight: bold; color: #e74c3c; }
-  .کنٹینر { max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
-  h1 { color: #2c3e50; margin-bottom: 1.5rem; font-size: 1.8rem; }
-  .کارڈ {
-    background: #fff;
-    border-radius: 10px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    border-right: 4px solid #e74c3c;
-  }
-  .کارڈ h2 { font-size: 1.25rem; margin-bottom: 0.4rem; }
-  .کارڈ h2 a { color: #2c3e50; text-decoration: none; }
-  .کارڈ h2 a:hover { color: #e74c3c; }
-  .کارڈ h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
-  .میٹا { color: #999; font-size: 0.85rem; margin-bottom: 0.8rem; }
-  .متن {
-    color: #444;
-    line-height: 1.75;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .پوری { color: #333; line-height: 1.9; white-space: pre-wrap; }
-  .بٹن {
-    display: inline-block;
-    padding: 0.5rem 1.2rem;
-    border-radius: 6px;
-    border: none;
-    background: #e74c3c;
-    color: #fff;
-    font-size: 0.95rem;
-    cursor: pointer;
-    text-decoration: none;
-    margin-top: 0.8rem;
-    margin-left: 0.5rem;
-  }
-  .بٹن:hover { background: #c0392b; }
-  .بٹن.ثانوی { background: #7f8c8d; }
-  .بٹن.ثانوی:hover { background: #636e72; }
-  .فارم label {
-    display: block;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 0.4rem;
-    margin-top: 1rem;
-  }
-  .فارم input, .فارم textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    direction: rtl;
-    outline: none;
-    font-family: inherit;
-  }
-  .فارم input:focus, .فارم textarea:focus { border-color: #e74c3c; }
-  .فارم textarea { min-height: 160px; resize: vertical; }
-  .خالی { text-align: center; padding: 4rem 1rem; color: #888; }
-  .خالی p { margin-bottom: 1rem; font-size: 1.1rem; }
-</style>`;
-
-// ─── بیس صفحہ ─────────────────────────────────────────────────
-فنکشن بیس(عنوان_صفحہ, مواد) {
-    واپس `<!DOCTYPE html>
-<html dir="rtl" lang="ur">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${عنوان_صفحہ} — اردو بلاگ</title>
-${طرز}
-</head>
-<body>
-<nav>
-  <span class="لوگو">اردو بلاگ</span>
-  <div>
-    <a href="/">گھر</a>
-    <a href="/نئی_پوسٹ">+ نئی پوسٹ</a>
-  </div>
-</nav>
-<div class="کنٹینر">
-${مواد}
-</div>
-</body>
-</html>`;
-}
-
 // ─── گھر: تمام پوسٹیں ─────────────────────────────────────────
 @ایپ.حاصل("/")
 فنکشن گھر() {
-    متغیر کارڈز = "";
-    کے_لیے (متغیر پ کا پوسٹیں) {
-        متغیر شناخت = پ["شناخت"];
-        متغیر عنوان = پ["عنوان"];
-        متغیر مصنف = پ["مصنف"];
-        متغیر خلاصہ = پ["متن"];
-        کارڈز = کارڈز + `<div class="کارڈ">
-  <h2><a href="/پوسٹ/${شناخت}">${عنوان}</a></h2>
-  <div class="میٹا">✍ ${مصنف}</div>
-  <p class="متن">${خلاصہ}</p>
-  <a href="/پوسٹ/${شناخت}" class="بٹن">مزید پڑھیں</a>
-</div>`;
-    }
-    اگر (len(پوسٹیں) == 0) {
-        کارڈز = `<div class="خالی"><p>ابھی کوئی پوسٹ نہیں۔</p><a href="/نئی_پوسٹ" class="بٹن">پہلی پوسٹ لکھیں</a></div>`;
-    }
-    متغیر مواد = `<h1>تازہ پوسٹیں</h1>${کارڈز}`;
-    واپس فلاسک_جواب(بیس("گھر", مواد), 200, "text/html; charset=utf-8");
+    واپس فلاسک_سانچہ("گھر.html", پوسٹیں=پوسٹیں);
 }
 
 // ─── پوسٹ دیکھیں ──────────────────────────────────────────────
@@ -181,49 +49,23 @@ ${مواد}
 فنکشن پوسٹ_دیکھیں(pid) {
     متغیر نمبر = int(pid);
     متغیر ملی = جھوٹ;
-    متغیر پ_عنوان = "";
-    متغیر پ_متن = "";
-    متغیر پ_مصنف = "";
+    متغیر پوسٹ = خالی;
     کے_لیے (متغیر پ کا پوسٹیں) {
         اگر (پ["شناخت"] == نمبر) {
-            پ_عنوان = پ["عنوان"];
-            پ_متن = پ["متن"];
-            پ_مصنف = پ["مصنف"];
+            پوسٹ = پ;
             ملی = سچ;
         }
     }
     اگر (ملی == جھوٹ) {
-        متغیر مواد_خطا = `<div class="کارڈ"><h1>پوسٹ نہیں ملی</h1><p class="میٹا">یہ پوسٹ موجود نہیں۔</p><a href="/" class="بٹن ثانوی">واپس جائیں</a></div>`;
-        واپس فلاسک_جواب(بیس("غلطی", مواد_خطا), 404, "text/html; charset=utf-8");
+        واپس فلاسک_جواب("پوسٹ نہیں ملی", 404, "text/plain; charset=utf-8");
     }
-    متغیر مواد = `<div class="کارڈ">
-  <h1>${پ_عنوان}</h1>
-  <div class="میٹا">✍ ${پ_مصنف}</div>
-  <p class="پوری">${پ_متن}</p>
-  <br>
-  <a href="/" class="بٹن ثانوی">← واپس</a>
-</div>`;
-    واپس فلاسک_جواب(بیس(پ_عنوان, مواد), 200, "text/html; charset=utf-8");
+    واپس فلاسک_سانچہ("پوسٹ.html", پوسٹ=پوسٹ);
 }
 
 // ─── نئی پوسٹ: فارم ───────────────────────────────────────────
 @ایپ.حاصل("/نئی_پوسٹ")
 فنکشن نئی_فارم() {
-    متغیر مواد = `<h1>نئی پوسٹ لکھیں</h1>
-<div class="کارڈ">
-  <form method="POST" action="/نئی_پوسٹ" class="فارم">
-    <label for="عنوان">عنوان</label>
-    <input type="text" name="عنوان" id="عنوان" placeholder="پوسٹ کا عنوان..." required />
-    <label for="مصنف">مصنف</label>
-    <input type="text" name="مصنف" id="مصنف" placeholder="آپ کا نام..." required />
-    <label for="متن">پوسٹ</label>
-    <textarea name="متن" id="متن" placeholder="یہاں اپنی پوسٹ لکھیں..." required></textarea>
-    <br>
-    <button type="submit" class="بٹن">شائع کریں</button>
-    <a href="/" class="بٹن ثانوی">منسوخ</a>
-  </form>
-</div>`;
-    واپس فلاسک_جواب(بیس("نئی پوسٹ", مواد), 200, "text/html; charset=utf-8");
+    واپس فلاسک_سانچہ("نئی_پوسٹ.html");
 }
 
 // ─── نئی پوسٹ: محفوظ کریں ────────────────────────────────────

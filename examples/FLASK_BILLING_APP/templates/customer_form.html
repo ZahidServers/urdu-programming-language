@@ -1,0 +1,29 @@
+{% توسیع "base.html" %}
+{% بلاک عنوان %}نیا گاہک{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>نیا گاہک شامل کریں</h1>
+
+<div class="card">
+  <form method="POST" action="/customers/new">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="name">نام <span style="color:#e74c3c">*</span></label>
+        <input type="text" id="name" name="name" placeholder="گاہک کا پورا نام" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="phone">فون نمبر</label>
+        <input type="tel" id="phone" name="phone" placeholder="مثلاً 9876543210">
+      </div>
+      <div class="form-group full">
+        <label for="email">ای میل</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-success">محفوظ کریں</button>
+      <a href="/customers" class="btn btn-secondary">منسوخ</a>
+    </div>
+  </form>
+</div>
+{% بلاک_ختم %}

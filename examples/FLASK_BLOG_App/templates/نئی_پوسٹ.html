@@ -1,0 +1,23 @@
+{% توسیع "بنیاد.html" %}
+
+{% بلاک عنوان %}نئی پوسٹ — اردو بلاگ{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>نئی پوسٹ لکھیں</h1>
+<div class="کارڈ">
+  <form method="POST" action="/نئی_پوسٹ" class="فارم">
+    <label for="عنوان">عنوان</label>
+    <input type="text" name="عنوان" id="عنوان" placeholder="پوسٹ کا عنوان..." required />
+
+    <label for="مصنف">مصنف</label>
+    <input type="text" name="مصنف" id="مصنف" placeholder="آپ کا نام..." required />
+
+    <label for="متن">پوسٹ</label>
+    <textarea name="متن" id="متن" placeholder="یہاں اپنی پوسٹ لکھیں..." required></textarea>
+
+    <br>
+    <button type="submit" class="بٹن">شائع کریں</button>
+    <a href="/" class="بٹن ثانوی">منسوخ</a>
+  </form>
+</div>
+{% بلاک_ختم %}

@@ -1,0 +1,75 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}کیلکولیٹر — اردو حساب دان{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div class="کارڈ">
+  <h1>اردو حساب دان</h1>
+  <p style="color:#a6adc8; margin-bottom:1.25rem;">حسابی اظہار لکھیں — مثلاً: <code style="color:#f9e2af">2 + 3 * 4</code> یا <code style="color:#f9e2af">2 ** 10</code></p>
+
+  <div style="display:flex; gap:.75rem; margin-bottom:1rem;">
+    <input type="text" id="اظہار" placeholder="مثلاً: 100 / 4 + 25" autocomplete="off" />
+    <button class="بٹن بٹن-اصلی" onclick="حساب_کریں()" style="white-space:nowrap;">حساب کریں</button>
+  </div>
+
+  <div id="نتیجہ_باکس" style="min-height:3rem; padding:.75rem 1rem; background:#1e1e2e; border-radius:8px; font-size:1.1rem;">
+    <span style="color:#6c7086;">نتیجہ یہاں ظاہر ہوگا...</span>
+  </div>
+</div>
+
+<div class="کارڈ">
+  <h2>استعمال کا طریقہ</h2>
+  <table>
+    <thead><tr><th>اظہار</th><th>نتیجہ</th></tr></thead>
+    <tbody>
+      <tr><td><code>2 + 3 * 4</code></td><td>14</td></tr>
+      <tr><td><code>100 / 4</code></td><td>25.0</td></tr>
+      <tr><td><code>2 ** 10</code></td><td>1024</td></tr>
+      <tr><td><code>abs(-42)</code></td><td>42</td></tr>
+      <tr><td><code>round(3.14159, 2)</code></td><td>3.14</td></tr>
+      <tr><td><code>max(10, 20, 30)</code></td><td>30</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  var socket = io();
+  var چل_رہا = false;
+
+  function حساب_کریں() {
+    var expr = document.getElementById('اظہار').value.trim();
+    if (!expr || چل_رہا) return;
+    چل_رہا = true;
+    var box = document.getElementById('نتیجہ_باکس');
+    box.innerHTML = '<span style="color:#89b4fa;">حساب ہو رہا ہے...</span>';
+    socket.emit('حساب', { 'اظہار': expr });
+  }
+
+  socket.on('نتیجہ', function(data) {
+    چل_رہا = false;
+    var box = document.getElementById('نتیجہ_باکس');
+    if (data['خطا']) {
+      box.innerHTML = '<span class="خطا_متن">غلطی: ' + data['نتیجہ'] + '</span>';
+    } else {
+      box.innerHTML = '<span style="color:#a6adc8;">' + data['اظہار'] + '</span>'
+        + ' <span style="color:#6c7086;">= </span>'
+        + '<strong class="کامیاب_متن" style="font-size:1.25rem;">' + data['نتیجہ'] + '</strong>';
+    }
+    document.getElementById('اظہار').value = '';
+    document.getElementById('اظہار').focus();
+  });
+
+  socket.on('connect', function() {
+    document.getElementById('اظہار').removeAttribute('disabled');
+  });
+
+  socket.on('disconnect', function() {
+    document.getElementById('اظہار').setAttribute('disabled', 'true');
+    document.getElementById('نتیجہ_باکس').innerHTML = '<span class="خطا_متن">سرور سے رابطہ منقطع</span>';
+  });
+
+  document.getElementById('اظہار').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') حساب_کریں();
+  });
+</script>
+{% بلاک_ختم %}

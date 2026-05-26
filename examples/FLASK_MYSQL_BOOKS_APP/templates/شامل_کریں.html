@@ -1,0 +1,77 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}نئی کتاب شامل کریں — اردو کتب خانہ{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<h1>نئی کتاب شامل کریں</h1>
+
+<div class="کارڈ">
+  <form method="POST" action="/شامل">
+    <div class="فارم-گرڈ">
+
+      <div class="فارم-گروپ پورا">
+        <label for="title">عنوان <span style="color:#e17055">*</span></label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="کتاب کا مکمل عنوان..."
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="فارم-گروپ پورا">
+        <label for="author">مصنف <span style="color:#e17055">*</span></label>
+        <input
+          type="text"
+          id="author"
+          name="author"
+          placeholder="مصنف یا شاعر کا نام..."
+          required
+        />
+      </div>
+
+      <div class="فارم-گروپ">
+        <label for="year">سنہ اشاعت</label>
+        <input
+          type="number"
+          id="year"
+          name="year"
+          placeholder="مثلاً 1950"
+          min="1"
+          max="2100"
+        />
+      </div>
+
+      <div class="فارم-گروپ">
+        <label for="category">زمرہ</label>
+        <select id="category" name="category">
+          <option value="">— زمرہ چنیں —</option>
+          <option value="ناول">ناول</option>
+          <option value="افسانے">افسانے</option>
+          <option value="شاعری">شاعری</option>
+          <option value="ڈراما">ڈراما</option>
+          <option value="کلاسیک">کلاسیک</option>
+          <option value="غیر افسانوی">غیر افسانوی</option>
+          <option value="دیگر">دیگر</option>
+        </select>
+      </div>
+
+      <div class="فارم-گروپ پورا">
+        <label for="summary">خلاصہ</label>
+        <textarea
+          id="summary"
+          name="summary"
+          placeholder="کتاب کا مختصر تعارف یا خلاصہ..."
+        ></textarea>
+      </div>
+
+    </div>
+
+    <div style="display:flex; gap:.75rem; margin-top:1rem;">
+      <button type="submit" class="بٹن بٹن-کامیاب">✓ شامل کریں</button>
+      <a href="/" class="بٹن بٹن-ثانوی">منسوخ</a>
+    </div>
+  </form>
+</div>
+{% بلاک_ختم %}

@@ -1,0 +1,67 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}تاریخ — اردو حساب دان{% بلاک_ختم %}
+
+{% بلاک مواد %}
+<div class="کارڈ">
+  <h1>حسابات کی تاریخ</h1>
+
+  <form method="GET" action="/تاریخ/" style="display:flex; gap:.75rem; margin-bottom:1rem;">
+    <input type="text" name="تلاش" value="{{ تلاش }}" placeholder="اظہار یا نتیجہ تلاش کریں..." />
+    <button type="submit" class="بٹن بٹن-اصلی" style="white-space:nowrap;">تلاش</button>
+    {% اگر تلاش %}
+    <a href="/تاریخ/" class="بٹن بٹن-ثانوی">× صاف</a>
+    {% اگر_ختم %}
+  </form>
+
+  {% اگر تلاش %}
+  <p style="color:#a6adc8; margin-bottom:.75rem;">
+    "<strong>{{ تلاش }}</strong>" کے نتائج: {{ کل }} حساب
+  </p>
+  {% اگر_ختم %}
+
+  {% اگر حسابات %}
+  <table>
+    <thead>
+      <tr>
+        <th style="width:3rem;">#</th>
+        <th>اظہار</th>
+        <th>نتیجہ</th>
+        <th style="width:9rem;">وقت</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% کے_لیے ح کا حسابات %}
+      <tr>
+        <td style="color:#6c7086;">{{ ح.id }}</td>
+        <td style="direction:ltr; text-align:right; font-family:monospace;">{{ ح.expression }}</td>
+        {% اگر ح.is_error %}
+        <td class="خطا_متن" style="direction:ltr; text-align:right; font-family:monospace;">{{ ح.result }}</td>
+        {% ورنہ %}
+        <td class="کامیاب_متن" style="direction:ltr; text-align:right; font-family:monospace;">{{ ح.result }}</td>
+        {% اگر_ختم %}
+        <td style="font-size:.82rem; color:#6c7086;">{{ ح.ts }}</td>
+      </tr>
+    {% کے_لیے_ختم %}
+    </tbody>
+  </table>
+
+  {% اگر کل_صفحات > 1 %}
+  <div class="صفحہ_بندی">
+    {% کے_لیے ن کا صفحات %}
+    <a href="?صفحہ={{ ن }}{% اگر تلاش %}&amp;تلاش={{ تلاش }}{% اگر_ختم %}"
+       {% اگر ن == صفحہ %}class="فعال"{% اگر_ختم %}>{{ ن }}</a>
+    {% کے_لیے_ختم %}
+  </div>
+  {% اگر_ختم %}
+
+  <p style="margin-top:.75rem; color:#6c7086; font-size:.88rem;">
+    کل {{ کل }} حساب — صفحہ {{ صفحہ }} از {{ کل_صفحات }}
+  </p>
+
+  {% ورنہ %}
+  <p style="text-align:center; color:#6c7086; padding:2rem;">
+    {% اگر تلاش %}کوئی نتیجہ نہیں ملا{% ورنہ %}ابھی تک کوئی حساب نہیں — <a href="/" style="color:#cba6f7;">کیلکولیٹر کھولیں</a>{% اگر_ختم %}
+  </p>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

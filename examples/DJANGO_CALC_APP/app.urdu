@@ -1,0 +1,110 @@
+// ══════════════════════════════════════════════════════════════
+// اردو حساب دان — Django + Socket.IO + SQLite
+//
+// pip install django python-socketio werkzeug
+// DJANGO_CALC_APP/ سے چلائیں: urdu run app.urdu
+// براؤزر: http://localhost:8000
+// ══════════════════════════════════════════════════════════════
+
+درآمد { ڈجانگو, ڈجانگو_سانچہ } سے "اردو/ویب";
+درآمد { ساکٹ_آئی_او } سے "اردو/ویب";
+درآمد * بطور sqlite3 سے "sqlite3";
+درآمد * بطور os سے "os";
+
+// اسکرپٹ کی ڈائریکٹری بنائیں
+متغیر _بنیاد = os.path.dirname(os.path.abspath(__file__));
+
+// ڈیٹا بیس
+متغیر ڈی_بی_راستہ = `${_بنیاد}/حساب.db`;
+متغیر ڈی_بی = sqlite3.connect(ڈی_بی_راستہ, check_same_thread=جھوٹ);
+ڈی_بی.execute("CREATE TABLE IF NOT EXISTS calculations (id INTEGER PRIMARY KEY AUTOINCREMENT, expression TEXT NOT NULL, result TEXT NOT NULL, is_error INTEGER DEFAULT 0, ts DATETIME DEFAULT CURRENT_TIMESTAMP)");
+ڈی_بی.commit();
+
+// Django ترتیب
+متغیر سانچہ_ڈائریکٹری = `${_بنیاد}/templates`;
+متغیر ایپ = نیا ڈجانگو({ "سانچہ_فولڈر": [سانچہ_ڈائریکٹری], "ڈیبگ": سچ });
+ایپ.ترتیب_دیں();
+
+// Socket.IO
+متغیر sio = نیا ساکٹ_آئی_او({ "ایپ": ایپ });
+
+// فی صفحہ
+متغیر فی_صفحہ = 8;
+
+// گھر: کیلکولیٹر
+فنکشن گھر(req) {
+    واپس ڈجانگو_سانچہ(req, "کیلکولیٹر.html", {});
+}
+ایپ.راستہ("", گھر);
+
+// تاریخ: فہرست + تلاش + صفحہ بندی
+فنکشن تاریخ_دیکھیں(req) {
+    متغیر تلاش = req.GET.get("تلاش", "").strip();
+    متغیر صفحہ = int(req.GET.get("صفحہ", "1"));
+    اگر (صفحہ < 1) { صفحہ = 1; }
+    متغیر ازاچہ = (صفحہ - 1) * فی_صفحہ;
+
+    اگر (len(تلاش) > 0) {
+        متغیر مثل = `%${تلاش}%`;
+        متغیر کرسر = ڈی_بی.execute("SELECT id, expression, result, is_error, ts FROM calculations WHERE expression LIKE ? OR result LIKE ? ORDER BY ts DESC LIMIT ? OFFSET ?", [مثل, مثل, فی_صفحہ, ازاچہ]);
+        متغیر قطاریں = کرسر.fetchall();
+        متغیر گنتی = ڈی_بی.execute("SELECT COUNT(*) FROM calculations WHERE expression LIKE ? OR result LIKE ?", [مثل, مثل]).fetchone();
+        متغیر کل = گنتی[0];
+    } ورنہ {
+        متغیر کرسر = ڈی_بی.execute("SELECT id, expression, result, is_error, ts FROM calculations ORDER BY ts DESC LIMIT ? OFFSET ?", [فی_صفحہ, ازاچہ]);
+        متغیر قطاریں = کرسر.fetchall();
+        متغیر گنتی = ڈی_بی.execute("SELECT COUNT(*) FROM calculations").fetchone();
+        متغیر کل = گنتی[0];
+    }
+
+    متغیر حسابات = [];
+    کے_لیے (متغیر ق کا قطاریں) {
+        حسابات.شامل({ "id": ق[0], "expression": ق[1], "result": ق[2], "is_error": ق[3], "ts": ق[4] });
+    }
+
+    متغیر کل_صفحات = کل > 0 ? int(ریاضی.چھت(کل / فی_صفحہ)) : 1;
+    اگر (صفحہ > کل_صفحات) { صفحہ = کل_صفحات; }
+    متغیر صفحات = range(1, کل_صفحات + 1);
+
+    متغیر سیاق = { "حسابات": حسابات, "تلاش": تلاش, "صفحہ": صفحہ, "کل_صفحات": کل_صفحات, "کل": کل, "صفحات": صفحات, "فی_صفحہ": فی_صفحہ };
+    واپس ڈجانگو_سانچہ(req, "تاریخ.html", سیاق);
+}
+ایپ.راستہ("تاریخ/", تاریخ_دیکھیں);
+
+// Socket.IO واقعات
+@sio.پر_جڑنا()
+فنکشن جڑنا(sid, environ) {
+    لکھو(`جڑت: ${sid}`);
+}
+
+@sio.پر_منقطع()
+فنکشن منقطع(sid) {
+    لکھو(`منقطع: ${sid}`);
+}
+
+@sio.پر("حساب")
+فنکشن حساب_کریں(sid, data) {
+    متغیر اظہار = data.get("اظہار", "").strip();
+    متغیر نتیجہ = "";
+    متغیر خطا = 0;
+
+    کوشش {
+        متغیر امن_گلوبلز = { "__builtins__": خالی, "abs": abs, "round": round, "int": int, "float": float, "max": max, "min": min, "pow": pow };
+        متغیر جواب = eval(اظہار, امن_گلوبلز);
+        نتیجہ = str(جواب);
+    } پکڑو (e) {
+        نتیجہ = str(e);
+        خطا = 1;
+    }
+
+    ڈی_بی.execute("INSERT INTO calculations (expression, result, is_error) VALUES (?, ?, ?)", [اظہار, نتیجہ, خطا]);
+    ڈی_بی.commit();
+    sio._sio.emit("نتیجہ", { "اظہار": اظہار, "نتیجہ": نتیجہ, "خطا": خطا }, room=sid);
+}
+
+// سرور (werkzeug + threading mode برائے Socket.IO)
+درآمد { run_simple } سے "werkzeug.serving";
+متغیر wsgi_یکجا = sio.wsgi_ایپ(ایپ);
+لکھو("اردو حساب دان شروع ہو رہا ہے...");
+لکھو("براؤزر کھولیں: http://localhost:8000");
+run_simple("0.0.0.0", 8000, wsgi_یکجا, threaded=سچ, passthrough_errors=سچ);

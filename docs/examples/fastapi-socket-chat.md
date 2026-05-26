@@ -35,7 +35,7 @@ Then open **http://localhost:5000** in two or more browser tabs, enter different
 Browser (Socket.IO JS client)
         ↕  Socket.IO over HTTP/WebSocket
 FastAPI + python-socketio (ASGI)
-        ↕  sio.چلائیں(ایپ.ایپ, پورٹ=5000)
+        ↕  sio.چلائیں(ایپ, پورٹ=5000)
         uvicorn
 ```
 
@@ -157,18 +157,10 @@ This is the most important design decision in the app.
 ### 5. Starting the Server
 
 ```urdu
-sio.چلائیں(ایپ.ایپ, پورٹ=5000);
+sio.چلائیں(ایپ, پورٹ=5000);
 ```
 
-**Why `ایپ.ایپ` and not `ایپ`?**
-
-`ساکٹ_آئی_او.چلائیں()` calls `socketio.ASGIApp(sio_server, underlying_app)` internally. It needs the raw FastAPI instance (an ASGI callable), not the Urdu `فاسٹ_اے_پی_آئی` wrapper object. The `فاسٹ_اے_پی_آئی` wrapper exposes the raw instance via its `.ایپ` property:
-
-```urdu
-// ایپ     → فاسٹ_اے_پی_آئی wrapper (not ASGI-callable)
-// ایپ.ایپ → raw FastAPI instance (ASGI-callable) ✓
-sio.چلائیں(ایپ.ایپ, پورٹ=5000);
-```
+`ساکٹ_آئی_او.چلائیں()` auto-detects the framework: when passed a `فاسٹ_اے_پی_آئی` wrapper it unwraps it automatically, calls `socketio.ASGIApp(sio_server, raw_fastapi_app)`, and starts uvicorn. You can pass the wrapper directly — `.ایپ` is no longer needed.
 
 ---
 
@@ -229,7 +221,6 @@ examples/FASTAPI_SOCKET_CHAT_APP/
 | No message history | In-memory only | Store messages in a list and send history on connect |
 | No rooms | Single global broadcast | Use `sio.کمرہ_میں_شامل()` and emit to specific rooms |
 | No persistence | Resets on restart | Connect `اردو/ڈیٹا_بیس` for message storage |
-| `ایپ.ایپ` required | Urdu wrapper not auto-unwrapped | Future runtime fix will allow `sio.چلائیں(ایپ)` directly |
 
 ---
 

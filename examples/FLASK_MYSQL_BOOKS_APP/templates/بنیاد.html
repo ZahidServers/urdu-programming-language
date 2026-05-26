@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% بلاک عنوان %}اردو کتب خانہ{% بلاک_ختم %}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f5f6fa;
+      color: #2d3436;
+      direction: rtl;
+      min-height: 100vh;
+    }
+
+    /* ── ناوبار ── */
+    nav {
+      background: linear-gradient(135deg, #2d3436, #636e72);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .برانڈ {
+      color: #fdcb6e;
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .برانڈ span { color: #fff; font-size: .9rem; font-weight: normal; margin-right: .5rem; }
+    nav a { color: #dfe6e9; text-decoration: none; padding: .4rem .9rem; border-radius: 6px; font-size: .92rem; }
+    nav a:hover { background: rgba(255,255,255,.15); }
+    .نیا-بٹن { background: #00b894 !important; color: #fff !important; }
+    .نیا-بٹن:hover { background: #00a381 !important; }
+
+    /* ── کنٹینر ── */
+    .کنٹینر { max-width: 1000px; margin: 2rem auto; padding: 0 1.2rem; }
+
+    /* ── تلاش ── */
+    .تلاش-خانہ {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+    }
+    .تلاش-خانہ input {
+      flex: 1;
+      padding: .65rem 1rem;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      font-size: 1rem;
+      direction: rtl;
+      font-family: inherit;
+      outline: none;
+    }
+    .تلاش-خانہ input:focus { border-color: #6c5ce7; box-shadow: 0 0 0 3px rgba(108,92,231,.12); }
+    .تلاش-خانہ button {
+      padding: .65rem 1.4rem;
+      background: #6c5ce7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: .95rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .تلاش-خانہ button:hover { background: #5f4dd0; }
+    .تلاش-خانہ a {
+      padding: .65rem 1rem;
+      color: #636e72;
+      font-size: .9rem;
+      text-decoration: none;
+    }
+    .تلاش-خانہ a:hover { color: #2d3436; }
+
+    /* ── کارڈز گرڈ ── */
+    .کتاب-گرڈ {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+    .کتاب-کارڈ {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+      border-top: 4px solid #6c5ce7;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .کتاب-کارڈ:hover { box-shadow: 0 6px 20px rgba(0,0,0,.12); transform: translateY(-2px); transition: all .2s; }
+    .کتاب-عنوان { font-size: 1.1rem; font-weight: 700; color: #2d3436; line-height: 1.4; }
+    .کتاب-عنوان a { color: inherit; text-decoration: none; }
+    .کتاب-عنوان a:hover { color: #6c5ce7; }
+    .کتاب-مصنف { color: #636e72; font-size: .9rem; }
+    .کتاب-مصنف strong { color: #2d3436; }
+    .کتاب-خلاصہ { color: #555; font-size: .88rem; line-height: 1.6; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .زمرہ-بیج {
+      display: inline-block;
+      padding: .2rem .7rem;
+      border-radius: 20px;
+      font-size: .78rem;
+      font-weight: 600;
+      background: #eee8ff;
+      color: #6c5ce7;
+    }
+    .کارڈ-نچلا { display: flex; justify-content: space-between; align-items: center; margin-top: .5rem; }
+    .سنہ { font-size: .82rem; color: #aaa; }
+
+    /* ── صفحہ بندی ── */
+    .صفحہ-بندی {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .صفحہ-بندی a, .صفحہ-بندی span {
+      display: inline-block;
+      padding: .45rem .9rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 600;
+      border: 1px solid #dfe6e9;
+      color: #636e72;
+      background: #fff;
+    }
+    .صفحہ-بندی a:hover { background: #f0edff; border-color: #6c5ce7; color: #6c5ce7; }
+    .صفحہ-بندی .فعال { background: #6c5ce7; color: #fff; border-color: #6c5ce7; }
+    .صفحہ-بندی .غیر-فعال { opacity: .4; pointer-events: none; }
+
+    /* ── عمومی ── */
+    .بٹن {
+      display: inline-block;
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .بٹن-اصلی { background: #6c5ce7; color: #fff; }
+    .بٹن-اصلی:hover { background: #5f4dd0; }
+    .بٹن-ثانوی { background: #dfe6e9; color: #2d3436; }
+    .بٹن-ثانوی:hover { background: #b2bec3; }
+    .بٹن-کامیاب { background: #00b894; color: #fff; }
+    .بٹن-کامیاب:hover { background: #00a381; }
+
+    .کارڈ { background: #fff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+    h1 { font-size: 1.6rem; color: #2d3436; margin-bottom: 1.25rem; }
+    h2 { font-size: 1.2rem; color: #2d3436; margin-bottom: 1rem; }
+
+    .فارم-گرڈ { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .فارم-گروپ { margin-bottom: .75rem; }
+    .فارم-گروپ.پورا { grid-column: 1 / -1; }
+    .فارم-گروپ label { display: block; font-weight: 600; color: #444; margin-bottom: .35rem; font-size: .92rem; }
+    .فارم-گروپ input, .فارم-گروپ select, .فارم-گروپ textarea {
+      width: 100%; padding: .6rem .85rem;
+      border: 1px solid #dfe6e9; border-radius: 8px;
+      font-size: .95rem; direction: rtl; font-family: inherit;
+    }
+    .فارم-گروپ input:focus, .فارم-گروپ select:focus, .فارم-گروپ textarea:focus {
+      outline: none; border-color: #6c5ce7; box-shadow: 0 0 0 3px rgba(108,92,231,.12);
+    }
+    .فارم-گروپ textarea { min-height: 120px; resize: vertical; }
+
+    .خالی { text-align: center; padding: 4rem 1rem; color: #aaa; }
+    .خالی p { font-size: 1.1rem; margin-bottom: 1rem; }
+    .اطلاع { background: #eee8ff; color: #6c5ce7; padding: .6rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: .92rem; }
+
+    @media (max-width: 600px) {
+      .کتاب-گرڈ { grid-template-columns: 1fr; }
+      .فارم-گرڈ { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="برانڈ">
+    <span>📚</span>اردو کتب خانہ
+  </a>
+  <div>
+    <a href="/">فہرست</a>
+    <a href="/شامل" class="نیا-بٹن">+ کتاب شامل کریں</a>
+  </div>
+</nav>
+<div class="کنٹینر">
+  {% بلاک مواد %}{% بلاک_ختم %}
+</div>
+</body>
+</html>

@@ -392,15 +392,46 @@ class فلاسک:
             جامد_فولڈر = ترتیب.get("جامد_فولڈر", جامد_فولڈر)
         elif isinstance(ترتیب, str):
             نام = ترتیب
+        # Resolve root_path from the .urdu script's directory so that
+        # Flask finds templates/ and static/ next to the script, not next
+        # to the urdu package itself.
+        import os, sys as _sys
+        root_path = None
+        frame = _sys._getframe(1)
+        while frame is not None:
+            f = frame.f_globals.get("__file__", "")
+            if f and f.endswith((".urdu", ".urduc")):
+                root_path = os.path.dirname(os.path.abspath(f))
+                break
+            frame = frame.f_back
+        if root_path is None:
+            root_path = os.getcwd()
         self._app = Flask(نام,
                           template_folder=سانچہ_فولڈر,
-                          static_folder=جامد_فولڈر)
+                          static_folder=جامد_فولڈر,
+                          root_path=root_path)
+        try:
+            from urdu.runtime.urdu_templates import UrduJinja2Loader
+            if self._app.jinja_loader is not None:
+                self._app.jinja_loader = UrduJinja2Loader(self._app.jinja_loader)
+        except ImportError:
+            pass
 
     # ── Routes ────────────────────────────────────────────────────────────────
 
     def راستہ(self, url: str, طریقے: list = None):
         def decorator(fn):
-            self._app.route(url, methods=طریقے or ["GET"])(fn)
+            import asyncio, functools, contextvars
+            if asyncio.iscoroutinefunction(fn):
+                import concurrent.futures
+                @functools.wraps(fn)
+                def _sync(*args, **kw):
+                    ctx = contextvars.copy_context()
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+                        return ex.submit(ctx.run, asyncio.run, fn(*args, **kw)).result()
+                self._app.route(url, methods=طریقے or ["GET"])(_sync)
+            else:
+                self._app.route(url, methods=طریقے or ["GET"])(fn)
             return fn
         return decorator
 
@@ -461,8 +492,8 @@ class فلاسک:
     # ── Run ───────────────────────────────────────────────────────────────────
 
     def چلائیں(self, *, میزبان: str = "0.0.0.0", پورٹ: int = 5000,
-               ڈیبگ: bool = True):
-        self._app.run(host=میزبان, port=پورٹ, debug=ڈیبگ)
+               ڈیبگ: bool = True, تھریڈ: bool = False, **kwargs):
+        self._app.run(host=میزبان, port=پورٹ, debug=ڈیبگ, threaded=تھریڈ, **kwargs)
 
     @property
     def ایپ(self):
@@ -617,10 +648,16 @@ class ڈجانگو:
             "TEMPLATES": [{
                 "BACKEND": "django.template.backends.django.DjangoTemplates",
                 "DIRS": self._config.get("سانچہ_فولڈر", []),
-                "APP_DIRS": True,
-                "OPTIONS": {"context_processors": [
-                    "django.template.context_processors.request",
-                ]},
+                "APP_DIRS": False,
+                "OPTIONS": {
+                    "context_processors": [
+                        "django.template.context_processors.request",
+                    ],
+                    "loaders": [
+                        "urdu.runtime.urdu_templates.UrduFilesystemLoader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
+                },
             }],
         }
         if not settings.configured:
@@ -766,11 +803,14 @@ class ڈجانگو_آزمائش:
 
 class ساکٹ_آئی_او:
     """
-    Socket.IO server wrapping python-socketio.
+    Socket.IO server — auto-adapts to Flask/Django (WSGI) and FastAPI (ASGI).
 
-    پر()  → register event handler
-    بھیجو() → emit to client(s)
-    نشر()  → broadcast to room
+    پر()       → event handler decorator
+    بھیجو()    → emit to a client or room
+    نشر()      → broadcast to all
+    wsgi_ایپ() → WSGI wrapper for Flask / Django
+    asgi_ایپ() → ASGI wrapper for FastAPI
+    چلائیں()   → run (picks werkzeug or uvicorn automatically)
     """
 
     def __init__(self, ترتیب=None, *, ایپ=None, کورس: list = None, غیر_متزامن: bool = True):
@@ -782,13 +822,23 @@ class ساکٹ_آئی_او:
             ایپ = ترتیب.get("ایپ", ایپ)
             کورس = ترتیب.get("کورس", کورس)
             غیر_متزامن = ترتیب.get("غیر_متزامن", غیر_متزامن)
+        # WSGI frameworks → sync threading server; ASGI → async server
+        if isinstance(ایپ, (فلاسک, ڈجانگو)):
+            غیر_متزامن = False
+        elif isinstance(ایپ, فاسٹ_اے_پی_آئی):
+            غیر_متزامن = True
+        self._is_async = غیر_متزامن
         if غیر_متزامن:
             self._sio = socketio.AsyncServer(
                 async_mode="asgi",
                 cors_allowed_origins=کورس or "*",
             )
         else:
-            self._sio = socketio.Server(cors_allowed_origins=کورس or "*")
+            # threading mode: safe with Flask/Django, no eventlet/gevent needed
+            self._sio = socketio.Server(
+                async_mode="threading",
+                cors_allowed_origins=کورس or "*",
+            )
         self._ایپ = ایپ
 
     # ── Event decorators ──────────────────────────────────────────────────────
@@ -801,49 +851,86 @@ class ساکٹ_آئی_او:
         return decorator
 
     def پر_جڑنا(self, *, نام_فضا: str = "/"):
-        """Shortcut for 'connect' event."""
         return self.پر("connect", نام_فضا=نام_فضا)
 
     def پر_منقطع(self, *, نام_فضا: str = "/"):
-        """Shortcut for 'disconnect' event."""
         return self.پر("disconnect", نام_فضا=نام_فضا)
 
     # ── Emit ──────────────────────────────────────────────────────────────────
 
     async def بھیجو(self, واقعہ: str, ڈیٹا, *, کمرہ: str = None, نام_فضا: str = "/", مستثنی: str = None):
-        """Emit an event to a specific room/sid or broadcast."""
-        await self._sio.emit(واقعہ, ڈیٹا, room=کمرہ, namespace=نام_فضا, skip_sid=مستثنی)
+        """Emit to a specific sid/room (or broadcast if کمرہ=None)."""
+        if self._is_async:
+            await self._sio.emit(واقعہ, ڈیٹا, room=کمرہ, namespace=نام_فضا, skip_sid=مستثنی)
+        else:
+            self._sio.emit(واقعہ, ڈیٹا, room=کمرہ, namespace=نام_فضا, skip_sid=مستثنی)
 
     async def نشر(self, واقعہ: str, ڈیٹا, *, نام_فضا: str = "/"):
         """Broadcast to all connected clients."""
-        await self._sio.emit(واقعہ, ڈیٹا, namespace=نام_فضا)
+        if self._is_async:
+            await self._sio.emit(واقعہ, ڈیٹا, namespace=نام_فضا)
+        else:
+            self._sio.emit(واقعہ, ڈیٹا, namespace=نام_فضا)
 
     # ── Room management ───────────────────────────────────────────────────────
 
     async def کمرہ_میں_شامل(self, sid: str, کمرہ: str, *, نام_فضا: str = "/"):
-        await self._sio.enter_room(sid, کمرہ, namespace=نام_فضا)
+        if self._is_async:
+            await self._sio.enter_room(sid, کمرہ, namespace=نام_فضا)
+        else:
+            self._sio.enter_room(sid, کمرہ, namespace=نام_فضا)
 
     async def کمرہ_چھوڑیں(self, sid: str, کمرہ: str, *, نام_فضا: str = "/"):
-        await self._sio.leave_room(sid, کمرہ, namespace=نام_فضا)
+        if self._is_async:
+            await self._sio.leave_room(sid, کمرہ, namespace=نام_فضا)
+        else:
+            self._sio.leave_room(sid, کمرہ, namespace=نام_فضا)
 
     def کمرے(self, sid: str, *, نام_فضا: str = "/") -> list:
         return list(self._sio.rooms(sid, namespace=نام_فضا))
 
-    # ── ASGI app ──────────────────────────────────────────────────────────────
+    # ── WSGI app (Flask + Django) ─────────────────────────────────────────────
 
-    def asgi_ایپ(self, fastapi_ایپ=None):
+    def wsgi_ایپ(self, src=None):
+        """Wrap Flask or Django app + SocketIO into a single WSGI app."""
+        import socketio
+        src = src or self._ایپ
+        if isinstance(src, فلاسک):
+            raw = src.ایپ
+        elif isinstance(src, ڈجانگو):
+            from django.core.wsgi import get_wsgi_application
+            raw = get_wsgi_application()
+        else:
+            raw = src  # already a raw WSGI callable
+        if raw is None:
+            raise ValueError("Flask، Django، یا WSGI callable پاس کریں")
+        return socketio.WSGIApp(self._sio, raw)
+
+    # ── ASGI app (FastAPI) ────────────────────────────────────────────────────
+
+    def asgi_ایپ(self, src=None):
         """Wrap FastAPI app + SocketIO into a single ASGI app."""
         import socketio
-        underlying = fastapi_ایپ or (self._ایپ.ایپ if self._ایپ else None)
-        if underlying is None:
-            raise ValueError("fastapi_ایپ یا فاسٹ_اے_پی_آئی پاس کریں")
-        return socketio.ASGIApp(self._sio, underlying)
+        src = src or self._ایپ
+        if isinstance(src, فاسٹ_اے_پی_آئی):
+            raw = src.ایپ
+        else:
+            raw = src  # already a raw ASGI callable
+        if raw is None:
+            raise ValueError("FastAPI یا ASGI callable پاس کریں")
+        return socketio.ASGIApp(self._sio, raw)
+
+    # ── Run ───────────────────────────────────────────────────────────────────
 
     def چلائیں(self, ایپ=None, *, میزبان: str = "0.0.0.0", پورٹ: int = 8000):
-        """Run the combined ASGI application."""
-        import uvicorn
-        asgi = self.asgi_ایپ(ایپ)
-        uvicorn.run(asgi, host=میزبان, port=پورٹ)
+        """Start the server — werkzeug for Flask/Django, uvicorn for FastAPI."""
+        src = ایپ or self._ایپ
+        if isinstance(src, (فلاسک, ڈجانگو)) or not self._is_async:
+            from werkzeug.serving import run_simple
+            run_simple(میزبان, پورٹ, self.wsgi_ایپ(src))
+        else:
+            import uvicorn
+            uvicorn.run(self.asgi_ایپ(src), host=میزبان, port=پورٹ)
 
     @property
     def سرور(self):
