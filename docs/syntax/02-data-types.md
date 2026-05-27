@@ -27,6 +27,41 @@ Numbers can be integers or floating-point values. Both are the same `number` typ
 
 > **اردو:** اعداد یا تو پوری تعداد (integer) ہو سکتے ہیں یا اعشاری (floating-point)۔ دونوں اندرونی طور پر ایک ہی `number` قسم ہیں۔
 
+### Two numeral systems — دو عددی نظام
+
+The Urdu Programming Language accepts **both** Western (Roman) digits and **native Urdu/Arabic-Indic digits** anywhere a number appears. The lexer automatically normalises them to the same value before execution — they are completely interchangeable.
+
+| System | Digits | Example |
+|--------|--------|---------|
+| Western (Roman) | `0 1 2 3 4 5 6 7 8 9` | `42`, `3.14`, `1_000` |
+| Urdu native (Extended Arabic-Indic) | `۰ ۱ ۲ ۳ ۴ ۵ ۶ ۷ ۸ ۹` | `۴۲`, `۳.۱۴`, `۱_۰۰۰` |
+| Arabic-Indic | `٠ ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩` | `٤٢`, `٣.١٤` |
+
+```urdu
+// These are identical — all produce the same integer 42
+متغیر الف = 42;
+متغیر ب   = ۴۲;
+متغیر ج   = ٤٢;
+
+لکھو(الف == ب);   // true
+لکھو(ب == ج);     // true
+
+// Mix freely within the same expression
+متغیر نتیجہ = ۱۰ + 5 + ٥;
+لکھو(نتیجہ);      // 20
+
+// Floats work the same way
+متغیر پائی = ۳.۱۴۱۵۹;
+لکھو(پائی);       // 3.14159
+
+// Urdu digits in a loop
+کے_لیے (متغیر i = ۰; i < ۵; i++) {
+    لکھو(i);      // 0 1 2 3 4
+}
+```
+
+> **اردو:** اردو پروگرامنگ لینگویج دو عددی نظام قبول کرتی ہے: مغربی (رومن) اعداد `0-9` اور مقامی اردو اعداد `۰-۹`۔ لیکسر دونوں کو خودبخود ایک جیسا سمجھتا ہے — آپ دونوں کو آزادانہ ملا سکتے ہیں۔
+
 ### Integer literals — پوری تعداد
 
 ```urdu

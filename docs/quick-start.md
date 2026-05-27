@@ -85,9 +85,11 @@ Output:
 
 ## 3. Basic Arithmetic — بنیادی ریاضی
 
+> **Tip:** You can write numbers using Western digits (`0-9`) **or** native Urdu digits (`۰-۹`) — they are identical to the language. `۱۵` and `15` are exactly the same value.
+
 ```urdu
-متغیر الف = 15
-متغیر ب = 4
+متغیر الف = 15      // Western digits
+متغیر ب   = ۴       // Urdu native digits — same as 4
 
 لکھو("جمع:    ", الف + ب)        // 19
 لکھو("تفریق:", الف - ب)        // 11
