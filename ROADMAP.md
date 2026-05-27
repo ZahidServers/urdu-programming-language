@@ -130,6 +130,7 @@ Ongoing — known areas:
 - ~~Windows path handling in `__file__`-relative imports~~ — transpiler strips `./` and `.\` prefixes before module-name conversion
 - ~~Django compiled-exe crash (`django.core.management` not found)~~ — `django.contrib.auth` and `django.contrib.contenttypes` removed from default INSTALLED_APPS in the `ڈجانگو` wrapper; add them explicitly via the `ایپس` config key when needed
 - ~~FastAPI/SocketIO and Flask MySQL compiled-exe crash (`cannot locate package '' associated with metadata`)~~ — `build.py` now includes explicit `--include-distribution-metadata` flags for `opentelemetry-api`, `opentelemetry-sdk`, `opentelemetry-semantic-conventions`, `anyio`, `uvicorn`, and `flask` instead of the unsupported wildcard `*`
+- ~~`xlrd` missing from standalone build~~ — `xlrd` added to `requirements.txt` and installed; future builds will automatically include `.xls` legacy Excel file support
 
 ---
 

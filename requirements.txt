@@ -9,6 +9,10 @@
 # ─── GUI (optional) ──────────────────────────
 # tkinter is built-in with Python
 
+# ─── File I/O ────────────────────────────────
+# openpyxl                  # Excel .xlsx read/write
+# xlrd                      # Excel .xls read (legacy format)
+
 # ─── Databases ───────────────────────────────
 # mysql-connector-python    # MySQL
 # pymysql                   # MySQL (pure-Python alternative)

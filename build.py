@@ -4,6 +4,17 @@ Urdu Programming Language — Standalone Executable Builder
 
 Output: dist/urdu.dist/urdu.exe  (portable, no Python needed)
 
+!! IMPORTANT — ALWAYS BUILD FROM THE VIRTUAL ENVIRONMENT !!
+    Anaconda base includes hundreds of extra packages that bloat the output
+    from ~600 MB to 3+ GB and doubles build time.
+
+    Activate before building:
+        build_env\Scripts\Activate.ps1          (PowerShell)
+        build_env\Scripts\activate.bat          (CMD)
+
+    Then run:
+        python build.py
+
 Usage:
     python build.py               -- full standalone build
     python build.py --fast        -- core + web only (quick test build)
