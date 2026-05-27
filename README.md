@@ -9,10 +9,10 @@
 # Urdu Programming Language — اردو پروگرامنگ لینگویج
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)](https://www.python.org)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/zahid-wadiwale/urdu-lang/releases)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green)](https://github.com/zahid-wadiwale/urdu-lang/releases/tag/v1.0.0)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/ZahidServers/urdu-programming-language/releases)
+[![Version](https://img.shields.io/badge/Version-1.0.0-green)](https://github.com/ZahidServers/urdu-programming-language/releases/tag/v1.0.0)
 [![License](https://img.shields.io/badge/License-UPL--1.0-orange)](LICENSE)
-[![Author](https://img.shields.io/badge/Author-Mohammed%20Zahid%20Wadiwale-red)](https://github.com/zahid-wadiwale)
+[![Author](https://img.shields.io/badge/Author-Mohammed%20Zahid%20Wadiwale-red)](https://github.com/ZahidServers)
 
 > **The world's first fully-featured programming language written entirely in Urdu.**  
 > Write code, build web servers, train ML models, manage databases — all in اردو.
@@ -115,7 +115,7 @@ The **Urdu Programming Language** lets you write real, working software using Ur
 
 ### Option 1 — Pre-built Windows exe (recommended)
 
-Download the latest release from the [**Releases page**](https://github.com/zahid-wadiwale/urdu-lang/releases):
+Download the latest release from the [**Releases page**](https://github.com/ZahidServers/urdu-programming-language/releases):
 
 1. Download `urdu-v1.0.0-windows.zip`
 2. Extract to any folder (e.g. `C:\urdu\`)
@@ -145,8 +145,8 @@ urdu repl
 ### Option 3 — Run from source
 
 ```
-git clone https://github.com/zahid-wadiwale/urdu-lang.git
-cd urdu-lang
+git clone https://github.com/ZahidServers/urdu-programming-language.git
+cd urdu-programming-language
 pip install -r requirements.txt
 python -m urdu run hello.urdu
 ```

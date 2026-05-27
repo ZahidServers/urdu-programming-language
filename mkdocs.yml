@@ -3,8 +3,8 @@ site_description: The world's first programming language written entirely in Urd
 site_author: Mohammed Zahid Wadiwale
 site_url: https://urdu-programming-language.readthedocs.io/
 
-repo_url: https://github.com/zahidwadiwale/urdu-programming-language
-repo_name: urdu-programming-language
+repo_url: https://github.com/ZahidServers/urdu-programming-language
+repo_name: ZahidServers/urdu-programming-language
 
 docs_dir: docs
 theme:

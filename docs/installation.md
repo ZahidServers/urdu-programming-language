@@ -14,7 +14,7 @@ The easiest way to use the Urdu Programming Language is to download the pre-buil
 
 ### Steps — اقدامات
 
-1. Go to the **[GitHub Releases page](https://github.com/zahidwadiwale/urdu-programming-language/releases)**
+1. Go to the **[GitHub Releases page](https://github.com/ZahidServers/urdu-programming-language/releases)**
 2. Download the latest release: `urdu-windows-vX.X.X.zip`
 3. Extract the ZIP file — you will get a folder called `urdu.dist`
 4. Inside the folder is `urdu.exe`
@@ -109,7 +109,7 @@ brew install python
 
 ### Option A — Clone from GitHub (recommended)
 ```
-git clone https://github.com/zahidwadiwale/urdu-programming-language.git
+git clone https://github.com/ZahidServers/urdu-programming-language.git
 cd urdu-programming-language
 ```
 

@@ -237,7 +237,7 @@ pip install fastapi uvicorn
 
 - Run `urdu مدد` in your terminal for Urdu-language help
 - Full documentation: [`docs/`](docs/) folder
-- Report issues: https://github.com/zahid-wadiwale/urdu-lang/issues
+- Report issues: https://github.com/ZahidServers/urdu-programming-language/issues
 - Contact the author: zahid.wadiwale1234@gmail.com
 
 ---

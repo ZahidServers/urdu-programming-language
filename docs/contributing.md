@@ -32,7 +32,7 @@ cd urdu-programming-language
 ### 3. Add the upstream remote — اپ اسٹریم ریموٹ شامل کریں
 
 ```
-git remote add upstream https://github.com/zahidwadiwale/urdu-programming-language.git
+git remote add upstream https://github.com/ZahidServers/urdu-programming-language.git
 ```
 
 ### 4. Set up your development environment — ترقیاتی ماحول ترتیب دیں
