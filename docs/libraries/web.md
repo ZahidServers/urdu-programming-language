@@ -7,7 +7,7 @@ This library provides Urdu-keyword wrappers around FastAPI, Flask, WebSocket, So
 **Install dependencies:**
 
 ```
-pip install fastapi uvicorn flask python-socketio websockets aiohttp python-jose[cryptography]
+pip install fastapi uvicorn flask django python-socketio websockets aiohttp python-jose[cryptography]
 ```
 
 ---
@@ -16,10 +16,11 @@ pip install fastapi uvicorn flask python-socketio websockets aiohttp python-jose
 
 1. [FastAPI (فاسٹ_اے_پی_آئی)](#fastapi-فاسٹ_اے_پی_آئی)
 2. [Flask (فلاسک)](#flask-فلاسک)
-3. [Urdu Jinja2 / Django Templates](#urdu-jinja2--django-templates----اردو-سانچے)
-4. [WebSocket (ویب_ساکٹ)](#websocket-ویب_ساکٹ)
-5. [Socket.IO (ساکٹ_آئی_او)](#socketio-ساکٹ_آئی_او)
-6. [HTTP Client (نیٹ / جالی_کلائنٹ)](#http-client-نیٹ--جالی_کلائنٹ)
+3. [Django (ڈجانگو)](#django-ڈجانگو)
+4. [Urdu Jinja2 / Django Templates](#urdu-jinja2--django-templates----اردو-سانچے)
+5. [WebSocket (ویب_ساکٹ)](#websocket-ویب_ساکٹ)
+6. [Socket.IO (ساکٹ_آئی_او)](#socketio-ساکٹ_آئی_او)
+7. [HTTP Client (نیٹ / جالی_کلائنٹ)](#http-client-نیٹ--جالی_کلائنٹ)
 
 ---
 
@@ -977,6 +978,104 @@ Blueprints group related routes and can be registered on the main app with a URL
 
 ایپ.چلائیں({ پورٹ: 5000, ڈیبگ: سچ });
 ```
+
+---
+
+## Django (ڈجانگو) — مکمل ویب فریم ورک
+
+Django is a full-featured web framework. The `ڈجانگو` class sets it up entirely in code — no `settings.py`, `manage.py`, or `urls.py` file required.
+
+> **اردو:** Django ایک مکمل ویب فریم ورک ہے۔ `ڈجانگو` کلاس اسے مکمل طور پر کوڈ میں ترتیب دیتی ہے — کوئی `settings.py`، `manage.py`، یا `urls.py` فائل ضروری نہیں۔
+
+**Install:**
+
+```
+pip install django
+```
+
+**Import:**
+
+```urdu
+درآمد { ڈجانگو, ڈجانگو_سانچہ } سے "اردو/ویب";
+```
+
+### Constructor — تعمیر کنندہ
+
+```urdu
+متغیر ایپ = نیا ڈجانگو(ترتیب)
+ایپ.ترتیب_دیں()
+```
+
+`نیا ڈجانگو(...)` stores the config. `.ترتیب_دیں()` calls `django.conf.settings.configure(...)` and calls `django.setup()` — it must be called before registering routes.
+
+**Config keys:**
+
+| کلید | نوع | پہلے سے | تفصیل |
+|------|------|---------|-------|
+| `سانچہ_فولڈر` | list\[str\] | `[]` | Absolute paths to template directories |
+| `ڈیبگ` | bool | `جھوٹ` | Enable Django debug mode and error pages |
+| `خفیہ_کلید` | string | dev key | Django `SECRET_KEY` |
+| `ڈیٹا_بیس` | dict or string | SQLite `:memory:` | Database config or SQLite file path |
+| `ایپس` | list\[str\] | `[]` | Additional `INSTALLED_APPS` entries |
+
+### Methods — طریقے
+
+| طریقہ | تفصیل |
+|-------|-------|
+| `ایپ.ترتیب_دیں()` | Configure Django settings and call `django.setup()` |
+| `ایپ.راستہ(url, view_fn)` | Register a URL → view function mapping |
+| `ایپ.wsgi()` | Return the Django WSGI callable (for use with werkzeug / gunicorn) |
+
+`ڈجانگو_سانچہ(request, template, context)` — renders a Django template; equivalent to `render(request, template, context)`.
+
+### Example — Django app with routes and templates
+
+> **اردو:** مثال — Django ایپ جس میں راستے اور سانچے ہیں، بغیر کسی فائل کے
+
+```urdu
+درآمد { ڈجانگو, ڈجانگو_سانچہ } سے "اردو/ویب";
+درآمد * بطور os سے "os";
+درآمد { run_simple } سے "werkzeug.serving";
+
+متغیر _بنیاد = os.path.dirname(os.path.abspath(__file__));
+
+متغیر ایپ = نیا ڈجانگو({
+    "سانچہ_فولڈر": [`${_بنیاد}/templates`],
+    "ڈیبگ": سچ
+});
+ایپ.ترتیب_دیں();
+
+// راستہ رجسٹر کریں
+@ایپ.راستہ("")
+فنکشن گھر(req) {
+    واپس ڈجانگو_سانچہ(req, "گھر.html", { "عنوان": "اردو Django" });
+}
+
+// Django WSGI اور werkzeug سرور
+run_simple("0.0.0.0", 8000, ایپ.wsgi(), threaded=سچ);
+```
+
+**`templates/گھر.html`:**
+
+```html
+<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<body>
+  <h1>{{ عنوان }}</h1>
+  <p>Django اردو میں خوش آمدید!</p>
+</body>
+</html>
+```
+
+### Architecture note — ساخت نوٹ
+
+The `ڈجانگو` class wires everything together internally:
+
+- Registers an `UrduFilesystemLoader` in `TEMPLATES` — this preprocesses Urdu template tags (`{% اگر %}`, `{% کے_لیے %}`, etc.) before Django's engine sees them.
+- Builds a `urlpatterns` list dynamically as `ایپ.راستہ()` is called.
+- `ایپ.wsgi()` returns `get_wsgi_application()` — usable with werkzeug, gunicorn, or any WSGI server.
+
+> **اردو:** `ڈجانگو` کلاس اندرونی طور پر `UrduFilesystemLoader` (اردو سانچہ ٹیگ پری پروسیسر)، `urlpatterns` (ہر `راستہ()` کال کے ساتھ) اور `wsgi` ایپ خود بخود بناتی ہے۔
 
 ---
 

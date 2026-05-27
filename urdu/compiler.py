@@ -201,6 +201,10 @@ class UrduCompiler:
         # Import builtins into REPL namespace
         exec("from urdu.runtime.builtins import *", ns)
 
+        def _incomplete(src: str) -> bool:
+            """True when source is an open multi-line block (more { than })."""
+            return src.count("{") > src.count("}")
+
         buf = []
         while True:
             try:
@@ -218,10 +222,16 @@ class UrduCompiler:
 
                 try:
                     py_src = self.compile_source(src, "<repl>")
-                    # Try as expression first
                     try:
                         code_obj = compile(py_src, "<repl>", "exec")
-                    except SyntaxError:
+                    except SyntaxError as e:
+                        # Generated Python has a syntax error.  If the Urdu
+                        # source still has unclosed braces, keep buffering.
+                        # Otherwise it is a real error — show it and reset.
+                        if _incomplete(src):
+                            continue
+                        print(f"نحوی غلطی: {e}", file=sys.stderr)
+                        buf = []
                         continue
 
                     try:
@@ -231,9 +241,15 @@ class UrduCompiler:
                         traceback.print_exc()
 
                     buf = []
-                except UrduCompilerError:
-                    # Incomplete input — keep buffering
-                    pass
+                except UrduCompilerError as e:
+                    # If source has unclosed braces the user is still typing a
+                    # multi-line block — keep buffering and show the "..." prompt.
+                    # Otherwise it is a genuine syntax error; show it and reset.
+                    if _incomplete(src):
+                        pass
+                    else:
+                        print(f"\n{e}", file=sys.stderr)
+                        buf = []
 
             except KeyboardInterrupt:
                 print("\nCtrl+C — خروج")

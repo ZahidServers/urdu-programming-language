@@ -184,7 +184,7 @@ All async constructs cause the script to be wrapped in
 | [Syntax Reference](syntax/) | Complete language syntax — keywords, operators, OOP |
 | [Built-ins](builtins/) | `لکھو`، `پڑھو`، `لمبائی`، `قسم` and all built-in functions |
 | [Libraries](libraries/) | Each standard library module documented in full |
-| [Examples](examples/) | Real programs: web server, database app, ML model, billing system, chat |
+| [Examples](examples/) | Real programs: web server, Django/Flask/FastAPI apps, ML model, billing system, chat |
 | [Building](building.md) | Compiling to a standalone `urdu.exe` with Nuitka |
 | [Contributing](contributing.md) | How to add keywords, builtins, and library modules |
 

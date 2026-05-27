@@ -401,13 +401,13 @@ Then open `myfile.py` to see exactly what Python code was generated.
 Releases are tagged on `main` with a version number (e.g., `v1.0.0`). Each release includes:
 
 - Source code ZIP and TAR (automatic from GitHub).
-- The compiled `__main__.dist.zip` — the standalone `urdu.exe` bundle — attached as a release asset.
+- The compiled `urdu.dist.zip` — the standalone `urdu.exe` bundle — attached as a release asset.
 
-> **اردو:** ریلیزیں `main` پر ورژن نمبر (مثلاً `v1.0.0`) کے ساتھ ٹیگ کی جاتی ہیں۔ ہر ریلیز میں سورس کوڈ ZIP اور TAR (GitHub سے خودکار) اور مرتب شدہ `__main__.dist.zip` — خود مختار `urdu.exe` بنڈل — بطور ریلیز اثاثہ شامل ہوتا ہے۔
+> **اردو:** ریلیزیں `main` پر ورژن نمبر (مثلاً `v1.0.0`) کے ساتھ ٹیگ کی جاتی ہیں۔ ہر ریلیز میں سورس کوڈ ZIP اور TAR (GitHub سے خودکار) اور مرتب شدہ `urdu.dist.zip` — خود مختار `urdu.exe` بنڈل — بطور ریلیز اثاثہ شامل ہوتا ہے۔
 
 To prepare a release asset:
 1. Build with `python build.py` (see [Building](building.md)).
-2. Zip the `dist\__main__.dist\` folder.
+2. Zip the `dist\urdu.dist\` folder.
 3. Attach the zip to the GitHub release.
 
 ---

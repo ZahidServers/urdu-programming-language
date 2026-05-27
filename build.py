@@ -2,7 +2,7 @@
 اردو پروگرامنگ لینگویج — Nuitka Build Script
 Urdu Programming Language — Standalone Executable Builder
 
-Output: dist/__main__.dist/urdu.exe  (portable, no Python needed)
+Output: dist/urdu.dist/urdu.exe  (portable, no Python needed)
 
 Usage:
     python build.py               -- full standalone build
@@ -255,6 +255,19 @@ def build(fast: bool = False, onefile: bool = False,
         r"--include-data-file=C:\ProgramData\anaconda3\Library\bin\sqlite3.dll=sqlite3.dll",
         "--include-module=ssl",
         "--include-module=hashlib",
+        # Nuitka 2.3.9 does NOT support wildcard for --include-distribution-metadata.
+        # List only packages that call importlib.metadata/importlib_metadata at
+        # runtime and need their dist-info present in the bundle:
+        #   opentelemetry-api  — opentelemetry.context._load_runtime_context() iterates entry_points
+        #   opentelemetry-sdk  — same pattern, 18 entry_points
+        #   anyio / uvicorn    — use importlib.metadata entry_points at startup
+        #   flask              — uses importlib.metadata for plugin discovery
+        "--include-distribution-metadata=opentelemetry-api",
+        "--include-distribution-metadata=opentelemetry-sdk",
+        "--include-distribution-metadata=opentelemetry-semantic-conventions",
+        "--include-distribution-metadata=anyio",
+        "--include-distribution-metadata=uvicorn",
+        "--include-distribution-metadata=flask",
         *[f"--include-package={p}" for p in all_pkgs],
         "--python-flag=-m",
         "urdu",

@@ -393,7 +393,16 @@ class Transpiler:
 
     def _s_ImportDeclaration(self, node: ImportDeclaration):
         src = node.source
-        py_mod = _MODULE_MAP.get(src, src.replace("/", ".").replace("-", "_"))
+        # Strip file-relative prefix (./ or .\) — the project directory is
+        # already on sys.path, so the bare module name resolves correctly.
+        # Leaving the leading dot produces a relative Python import which
+        # fails because user scripts run as __main__ (not a package).
+        _src_clean = src
+        if _src_clean.startswith(("./", ".\\")):
+            _src_clean = _src_clean[2:]
+        elif _src_clean.startswith(("../", "..\\")):
+            _src_clean = _src_clean[3:]
+        py_mod = _MODULE_MAP.get(src, _src_clean.replace("/", ".").replace("\\", ".").replace("-", "_"))
 
         if not node.specifiers:
             self._w(f"import {py_mod}")
@@ -530,7 +539,13 @@ class Transpiler:
             return f"{lhs} {op} {rhs}"
 
     def _e_TernaryExpr(self, n: TernaryExpr) -> str:
-        return f"({self._expr(n.consequent)} if {self._expr(n.condition)} else {self._expr(n.alternate)})"
+        cond = self._expr(n.condition)
+        cons = self._expr(n.consequent)
+        alt  = self._expr(n.alternate)
+        # Wrap condition in parens: prevents Python precedence issues when the
+        # condition contains logical operators (and/or) or when ternaries are
+        # deeply nested — Python's if/else has lower precedence than and/or.
+        return f"({cons} if ({cond}) else {alt})"
 
     def _e_NullishExpr(self, n: NullishExpr) -> str:
         lhs = self._expr(n.left)
@@ -637,6 +652,7 @@ class Transpiler:
         if isinstance(n.callee, MemberExpr) and not n.callee.computed:
             obj  = self._expr(n.callee.obj)
             meth = n.callee.prop.name if isinstance(n.callee.prop, Identifier) else ""
+            _orig_meth = meth  # save before Urdu normalisation
             # Normalise Urdu method name → JS name before further processing
             meth = self._URDU_TO_JS_METHOD.get(meth, meth)
             args_list = n.args
@@ -645,8 +661,10 @@ class Transpiler:
             if meth == "includes" and len(args_list) == 1:
                 return f"({self._expr(args_list[0])} in {obj})"
 
-            # join(sep)  →  sep.join(obj)   (JS: arr.join(sep) = Python: sep.join(arr))
-            if meth == "join":
+            # جوڑو(sep)  →  sep.join(obj)   (JS: arr.join(sep) = Python: sep.join(arr))
+            # Only invert when the Urdu keyword جوڑو was used.  Raw .join() calls
+            # (e.g. os.path.join, str.join) must pass through unchanged.
+            if meth == "join" and _orig_meth == "جوڑو":
                 sep = self._expr(args_list[0]) if args_list else '""'
                 return f"{sep}.join({obj})"
 

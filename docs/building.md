@@ -12,7 +12,7 @@ The build system uses [Nuitka](https://nuitka.net/) to compile the Python interp
 
 1. Nuitka analyses the `urdu` package and all included pip packages.
 2. It compiles everything to C, then links a native Windows binary.
-3. The output is a `dist/__main__.dist/` folder containing `urdu.exe` and all required DLLs.
+3. The output is a `dist/urdu.dist/` folder containing `urdu.exe` and all required DLLs.
 
 > **اردو:** تعمیراتی نظام [Nuitka](https://nuitka.net/) استعمال کرتا ہے جو Python تفسیر کار اور تمام بنڈل رن ٹائم لائبریریاں ایک خودکفیل Windows قابل عمل میں مرتب کرتا ہے۔
 
@@ -138,7 +138,7 @@ python build.py
 
 Includes: core interpreter, web frameworks, databases, ML (excluding TensorFlow), cryptography, scraping, file I/O, threading, date/time, logging.
 
-Output: `dist\__main__.dist\urdu.exe`
+Output: `dist\urdu.dist\urdu.exe`
 
 ### `--fast` — Core + Web only — تیز — صرف مرکز + ویب
 
@@ -148,7 +148,7 @@ python build.py --fast
 
 Skips database and ML packages. Faster to build, smaller output. Ideal for web application deployments.
 
-Output: `dist\__main__.dist\urdu.exe` (~250 MB)
+Output: `dist\urdu.dist\urdu.exe` (~250 MB)
 
 ### `--onefile` — Single executable file — یک فائل قابل عمل
 
@@ -201,9 +201,9 @@ After a successful standalone build:
 
 ```
 dist\
-  __main__.dist\
+  urdu.dist\
     urdu.exe              ← main executable (run this)
-    python311.dll         ← embedded CPython runtime
+    python312.dll         ← embedded CPython runtime
     _asyncio.pyd          ┐
     _ctypes.pyd           │ compiled Python extension modules
     _decimal.pyd          ┘
@@ -224,7 +224,7 @@ dist\
 
 ## Using the Built Executable — تیار شدہ قابل عمل استعمال کرنا
 
-From the `dist\__main__.dist\` folder:
+From the `dist\urdu.dist\` folder:
 
 ```
 urdu.exe run myprogram.urdu
@@ -234,9 +234,9 @@ urdu.exe مدد
 urdu.exe compile myfile.urdu
 ```
 
-Or add `dist\__main__.dist\` to your system PATH so you can type `urdu` from anywhere.
+Or add `dist\urdu.dist\` to your system PATH so you can type `urdu` from anywhere.
 
-> **اردو:** `dist\__main__.dist\` فولڈر کو PATH میں شامل کریں تاکہ `urdu` کہیں سے بھی ٹائپ کر سکیں۔
+> **اردو:** `dist\urdu.dist\` فولڈر کو PATH میں شامل کریں تاکہ `urdu` کہیں سے بھی ٹائپ کر سکیں۔
 
 ---
 
@@ -246,12 +246,12 @@ To distribute the compiled executable:
 
 > **اردو:** تیار شدہ قابل عمل تقسیم کرنے کے لیے۔
 
-1. Copy the **entire `dist\__main__.dist\` folder** to the target machine.
+1. Copy the **entire `dist\urdu.dist\` folder** to the target machine.
 2. No Python installation is required on the target machine.
 3. The target machine must be Windows 64-bit (same architecture as the build machine).
 4. The Visual C++ runtime (`vcruntime140.dll`) is included automatically by Nuitka.
 
-For GitHub releases, zip the `__main__.dist` folder and attach it as a release asset.
+For GitHub releases, zip the `urdu.dist` folder and attach it as a release asset.
 
 ---
 
@@ -278,6 +278,8 @@ For GitHub releases, zip the `__main__.dist` folder and attach it as a release a
 | `--jobs=4` | Parallel C compilation with 4 threads |
 | `--enable-plugins=no-qt` | Do not bundle Qt bindings |
 | `--include-package=<pkg>` | Explicitly include each detected package |
+| `--include-distribution-metadata=<dist>` | Bundle `.dist-info` for packages that call `importlib.metadata` at startup (e.g. opentelemetry-api, uvicorn, anyio, flask). Nuitka 2.3.9 does **not** support the `*` wildcard — list each package name explicitly |
+| `--nofollow-import-to=django.core.management` | Exclude Django's management command infrastructure (not needed at runtime; importing it in the compiled exe causes a crash) |
 | `--python-flag=-m` | Run as `python -m urdu` |
 
 ---
@@ -291,10 +293,13 @@ For GitHub releases, zip the `__main__.dist` folder and attach it as a release a
 | `nuitka: command not found` | Activate the virtual environment first |
 | Build fails after 1–2 minutes | Ensure Visual Studio Build Tools are installed with the C++ workload |
 | Build takes 6+ hours | You are building from Anaconda base — create a clean `venv` instead |
-| `urdu.exe` crashes on another machine | Ensure the target machine is 64-bit Windows; check that the full `__main__.dist` folder was copied |
+| `urdu.exe` crashes on another machine | Ensure the target machine is 64-bit Windows; check that the full `urdu.dist` folder was copied |
 | Missing library at runtime | The package was not installed when `build.py` ran — install it, then rebuild |
 | TensorFlow not found | Run `pip install tensorflow` inside the build venv first |
 | Low disk space error | Nuitka needs ~3 GB working space during the build |
+| `FATAL: could not find distribution '*'` | Nuitka 2.3.9 does not support `--include-distribution-metadata=*`. Use explicit package names (already fixed in `build.py`) |
+| `cannot locate package '' associated with metadata` at runtime | The compiled exe is missing dist-info for a package that calls `importlib_metadata.entry_points()` (typically `opentelemetry-api`). Rebuild with the explicit `--include-distribution-metadata` flags in `build.py` |
+| Django app crashes with `ModuleNotFoundError: django.core.management` | `django.core.management` is excluded from the compiled exe by `--nofollow-import-to`. Remove `django.contrib.auth` and `django.contrib.contenttypes` from `INSTALLED_APPS` — they transitively import that module. The `ڈجانگو` wrapper no longer includes them by default |
 
 ---
 
@@ -309,13 +314,13 @@ build_env\Scripts\Activate.ps1
 pip install -e . nuitka fastapi flask django uvicorn cryptography ...
 
 # Build
-python build.py              # full build  → dist\__main__.dist\urdu.exe
-python build.py --fast       # quick build → dist\__main__.dist\urdu.exe
+python build.py              # full build  → dist\urdu.dist\urdu.exe
+python build.py --fast       # quick build → dist\urdu.dist\urdu.exe
 python build.py --onefile    # single file → dist\urdu.exe
 python build.py --check      # dry run, no compilation
 
 # Run the result
-dist\__main__.dist\urdu.exe run hello.urdu
+dist\urdu.dist\urdu.exe run hello.urdu
 ```
 
 ---

@@ -279,6 +279,24 @@ User types "2 ** 10" → Enter
 | SQLite with threading | `check_same_thread=False` + one writer at a time | Fine for development; use PostgreSQL + connection pool for production |
 | No delete history | Read-only history | Add a DELETE endpoint and AJAX call |
 
+### Compiled-exe note — `urdu.exe` میں نوٹ
+
+`django.contrib.auth` and `django.contrib.contenttypes` are **not** included in the default `INSTALLED_APPS` when using the `ڈجانگو` wrapper. Those apps transitively import `django.core.management`, which is excluded from the compiled standalone exe (`--nofollow-import-to=django.core.management`).
+
+If your app needs Django's auth system or content types framework, add them explicitly:
+
+```urdu
+متغیر ایپ = نیا ڈجانگو({
+    "سانچہ_فولڈر": [سانچہ_ڈائریکٹری],
+    "ایپس": ["django.contrib.contenttypes", "django.contrib.auth"],
+    "ڈیبگ": سچ
+});
+```
+
+> **Note:** If you add `django.contrib.auth` or `django.contrib.contenttypes`, remove `--nofollow-import-to=django.core.management` from `build.py` and rebuild — otherwise Django's app registry will fail during `django.setup()`.
+
+This calculator app does **not** use Django auth, so it works with the default settings in both source mode and the compiled exe.
+
 ---
 
 ## Next Steps

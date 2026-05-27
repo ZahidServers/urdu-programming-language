@@ -1,0 +1,20 @@
+/* Urdu / Arabic text rendering */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap');
+
+/* Make Urdu/Arabic script inline in paragraphs render correctly */
+p, li, td, th, blockquote {
+    font-family: "Noto Naskh Arabic", "Noto Nastaliq Urdu", sans-serif;
+    line-height: 1.9;
+}
+
+/* Code blocks stay monospace */
+code, pre {
+    font-family: "Roboto Mono", monospace;
+    direction: ltr;
+}
+
+/* Urdu block-quotes (used heavily in the docs) */
+blockquote p {
+    direction: rtl;
+    text-align: right;
+}

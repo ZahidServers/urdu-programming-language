@@ -16,12 +16,12 @@ The easiest way to use the Urdu Programming Language is to download the pre-buil
 
 1. Go to the **[GitHub Releases page](https://github.com/zahidwadiwale/urdu-programming-language/releases)**
 2. Download the latest release: `urdu-windows-vX.X.X.zip`
-3. Extract the ZIP file — you will get a folder called `__main__.dist`
+3. Extract the ZIP file — you will get a folder called `urdu.dist`
 4. Inside the folder is `urdu.exe`
 
 ### Usage — استعمال
 
-Open a terminal (PowerShell or Windows Terminal) in the `__main__.dist` folder:
+Open a terminal (PowerShell or Windows Terminal) in the `urdu.dist` folder:
 
 ```powershell
 # Run a .urdu file
@@ -41,7 +41,7 @@ You can also add the folder to your system `PATH` so you can run `urdu.exe` from
 
 ```powershell
 # Add to PATH permanently (run in PowerShell as Administrator)
-$env:PATH += ";C:\path\to\__main__.dist"
+$env:PATH += ";C:\path\to\urdu.dist"
 [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Machine")
 ```
 
@@ -319,30 +319,30 @@ For users who do not want to install Python at all, a precompiled standalone exe
 
 ### Download — ڈاؤن لوڈ
 
-Download the `__main__.dist.zip` (or the full `dist` folder) from the latest GitHub release.
+Download the `urdu-windows-vX.X.X.zip` from the latest GitHub release and extract it.
 
 ### Structure — ساخت
 
 ```
-__main__.dist\
+urdu.dist\
     urdu.exe          ← main executable
-    python311.dll     ← embedded Python runtime
-    ...               ← all bundled packages
+    python312.dll     ← embedded Python runtime
+    ...               ← all bundled packages (web, database, ML, crypto, etc.)
 ```
 
 ### Run — چلائیں
 
 ```
-__main__.dist\urdu.exe run hello.urdu
-__main__.dist\urdu.exe repl
-__main__.dist\urdu.exe version
+urdu.dist\urdu.exe run hello.urdu
+urdu.dist\urdu.exe repl
+urdu.dist\urdu.exe version
 ```
 
 ### Distribute — تقسیم کریں
 
-Copy the **entire `__main__.dist` folder** to any Windows machine. No Python installation is required on the target machine. The folder is approximately 600 MB when all standard libraries are included.
+Copy the **entire `urdu.dist` folder** to any Windows machine. No Python installation is required on the target machine. The folder is approximately 600 MB when all standard libraries are included.
 
-> **اردو:** پوری `__main__.dist` فولڈر کسی بھی Windows مشین پر کاپی کریں۔ منزل مشین پر Python نصب ہونا ضروری نہیں۔
+> **اردو:** پوری `urdu.dist` فولڈر کسی بھی Windows مشین پر کاپی کریں۔ منزل مشین پر Python نصب ہونا ضروری نہیں۔
 
 > See [Building](building.md) if you want to compile the executable yourself from source.
 

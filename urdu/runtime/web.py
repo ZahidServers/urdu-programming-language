@@ -622,10 +622,11 @@ class ڈجانگو:
         import django
         from django.conf import settings
 
-        installed = [
-            "django.contrib.contenttypes",
-            "django.contrib.auth",
-        ] + self._config.get("ایپس", [])
+        # django.contrib.auth and contenttypes are NOT included by default
+        # because their AppConfig.ready() transitively imports
+        # django.core.management, which is excluded from the compiled exe.
+        # Add them explicitly via the "ایپس" config key if your project needs them.
+        installed = self._config.get("ایپس", [])
 
         db_cfg = self._config.get("ڈیٹا_بیس", {})
         if isinstance(db_cfg, str):

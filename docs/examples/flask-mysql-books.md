@@ -230,6 +230,21 @@ The year field is optional — `سنہ_عدد = خالی` (None) is inserted as 
 | URL param `<int:bid>` is ASCII | Flask path typing syntax | Use `<int:bid>` — the Urdu prefix in the path still works |
 | No category filter | Search only | Add `?زمرہ=ناول` query param and WHERE clause |
 
+### Compiled-exe note — `urdu.exe` میں نوٹ
+
+`mysql-connector-python` pulls in `opentelemetry-api`, which calls `importlib_metadata.entry_points()` at startup. In the compiled standalone exe this requires the dist-info metadata for several packages to be bundled. `build.py` now explicitly includes:
+
+```
+--include-distribution-metadata=opentelemetry-api
+--include-distribution-metadata=opentelemetry-sdk
+--include-distribution-metadata=opentelemetry-semantic-conventions
+--include-distribution-metadata=anyio
+--include-distribution-metadata=uvicorn
+--include-distribution-metadata=flask
+```
+
+Without these, the compiled exe raises `RuntimeError: cannot locate package '' associated with metadata` when the Flask app starts. Source mode (`urdu run app.urdu`) is unaffected.
+
 ---
 
 ## Next Steps
