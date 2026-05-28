@@ -1,0 +1,35 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}کتابستان — ناشرین{% بلاک_ختم %}
+{% بلاک مواد %}
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h2>🏢 ناشرین</h2>
+  </div>
+  <form method="post" style="margin-bottom:20px;display:flex;gap:10px;">
+    <input name="نام" placeholder="ناشر کا نام" required
+           style="padding:8px 12px;flex:1;border:1px solid #ddd;border-radius:4px;">
+    <input name="شہر" placeholder="شہر"
+           style="padding:8px 12px;width:160px;border:1px solid #ddd;border-radius:4px;">
+    <button type="submit" class="btn btn-green">شامل کریں</button>
+  </form>
+
+  {% اگر ناشرین %}
+  <table>
+    <tr><th>نام</th><th>شہر</th><th>کتابیں</th><th>عمل</th></tr>
+    {% کے_لیے ن کا ناشرین %}
+    <tr>
+      <td>{{ ن.نام }}</td>
+      <td>{{ ن.شہر }}</td>
+      <td>{{ ن.کتب_تعداد }}</td>
+      <td>
+        <a href="/ناشر/{{ ن.id }}/حذف/" class="btn btn-red" style="font-size:0.8rem"
+           onclick="return confirm('حذف کریں؟')">حذف</a>
+      </td>
+    </tr>
+    {% کے_لیے_ختم %}
+  </table>
+  {% ورنہ %}
+  <p>کوئی ناشر نہیں۔ اوپر فارم سے شامل کریں۔</p>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

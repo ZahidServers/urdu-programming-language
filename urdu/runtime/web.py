@@ -696,16 +696,26 @@ class ڈجانگو:
     # ── Database migrations ───────────────────────────────────────────────────
 
     def میزیں_بنائیں(self):
-        """Run migrate (create tables)."""
-        from django.core.management import call_command
-        call_command("migrate", "--run-syncdb", verbosity=0)
+        """Create tables for all Urdu ORM models using the schema editor."""
+        from django.db import connection
+        existing = connection.introspection.table_names()
+        with connection.schema_editor() as editor:
+            for model in _UrduModelMeta._urdu_models:
+                tbl = model._meta.db_table
+                if tbl not in existing:
+                    editor.create_model(model)
         return self
 
     # ── Run development server ────────────────────────────────────────────────
 
-    def چلائیں(self, *, پورٹ: int = 8000):
-        from django.core.management import execute_from_command_line
-        execute_from_command_line(["manage.py", "runserver", f"0.0.0.0:{پورٹ}"])
+    def چلائیں(self, *, میزبان: str = "0.0.0.0", پورٹ: int = 8000,
+               دوبارہ_لوڈ: bool = False):
+        """Start Django server via werkzeug (no django.core.management needed)."""
+        from django.core.handlers.wsgi import WSGIHandler
+        from werkzeug.serving import run_simple
+        print(f" * Urdu/Django running on http://{میزبان}:{پورٹ}")
+        run_simple(میزبان, پورٹ, WSGIHandler(),
+                   use_reloader=دوبارہ_لوڈ, threaded=True)
 
 
 # ─── Django view helpers ──────────────────────────────────────────────────────
@@ -746,6 +756,180 @@ def django_get_or_404(ماڈل, **کوارگز):
     """get_object_or_404."""
     from django.shortcuts import get_object_or_404
     return get_object_or_404(ماڈل, **کوارگز)
+
+
+# ─── Django ORM helpers ───────────────────────────────────────────────────────
+
+def _django_models():
+    try:
+        from django.db import models
+        return models
+    except ImportError:
+        raise ImportError("Django کے لیے چلائیں: pip install django")
+
+
+class _UrduModelMeta(type):
+    """
+    Metaclass for ڈجانگو_ماڈل subclasses.
+
+    Intercepts class creation and re-creates the class using Django's ModelBase
+    so that ORM machinery (objects manager, Meta, _meta, etc.) is fully applied.
+    Automatically injects app_label='urdu_app' when no Meta is present.
+    """
+
+    _urdu_models: list = []  # registry of all created Urdu ORM model classes
+
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        # ڈجانگو_ماڈل itself — plain class, no Django involvement yet
+        if not any(isinstance(b, _UrduModelMeta) and b is not _UrduModelMeta for b in bases):
+            return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+        try:
+            from django.db.models.base import ModelBase
+            from django.db import models as _m
+
+            # Inject default app_label so Django can register the model
+            # without needing a proper AppConfig.
+            if "Meta" not in namespace:
+                namespace["Meta"] = type("Meta", (), {"app_label": "urdu_app"})
+            elif not hasattr(namespace["Meta"], "app_label"):
+                namespace["Meta"].app_label = "urdu_app"
+
+            # Replace ڈجانگو_ماڈل with models.Model in the base list
+            new_bases = tuple(
+                _m.Model if (isinstance(b, _UrduModelMeta) and b is not _UrduModelMeta)
+                else b
+                for b in bases
+            )
+
+            # Use ModelBase to properly create the model class
+            cls = ModelBase.__new__(ModelBase, name, new_bases, namespace, **kwargs)
+            _UrduModelMeta._urdu_models.append(cls)
+            return cls
+        except ImportError:
+            return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+    def __init__(cls, name, bases, namespace, **kwargs):
+        # Skip custom __init__ for the base ڈجانگو_ماڈل class itself
+        if not any(isinstance(b, _UrduModelMeta) and b is not _UrduModelMeta for b in bases):
+            super().__init__(name, bases, namespace, **kwargs)
+
+
+class ڈجانگو_ماڈل(metaclass=_UrduModelMeta):
+    """
+    Base class for Urdu Django models.  Use جامد for field declarations:
+
+        کلاس کتاب توسیع ڈجانگو_ماڈل {
+            جامد عنوان = متن_خانہ(200)
+            جامد سال   = عدد_خانہ()
+        }
+
+    Then call  ایپ.میزیں_بنائیں()  to create the tables.
+    """
+
+
+# ─── Django field constructors ────────────────────────────────────────────────
+
+def متن_خانہ(زیادہ: int = 255, *, اجازت: bool = False, ڈیفالٹ=None, منفرد: bool = False):
+    """CharField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    kw = {"max_length": زیادہ, "blank": اجازت, "null": اجازت, "unique": منفرد}
+    if ڈیفالٹ is not None:
+        kw["default"] = ڈیفالٹ
+    return m.CharField(**kw)
+
+
+def طویل_متن(*, اجازت: bool = False, ڈیفالٹ=None):
+    """TextField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    kw = {"blank": اجازت, "null": اجازت}
+    if ڈیفالٹ is not None:
+        kw["default"] = ڈیفالٹ
+    return m.TextField(**kw)
+
+
+def عدد_خانہ(*, اجازت: bool = False, ڈیفالٹ=None):
+    """IntegerField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    kw = {"blank": اجازت, "null": اجازت}
+    if ڈیفالٹ is not None:
+        kw["default"] = ڈیفالٹ
+    return m.IntegerField(**kw)
+
+
+def اعشاریہ_خانہ(کل: int = 10, اعشاریہ: int = 2, *, اجازت: bool = False, ڈیفالٹ=None):
+    """DecimalField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    kw = {"max_digits": کل, "decimal_places": اعشاریہ, "blank": اجازت, "null": اجازت}
+    if ڈیفالٹ is not None:
+        kw["default"] = ڈیفالٹ
+    return m.DecimalField(**kw)
+
+
+def بولین_خانہ(*, ڈیفالٹ: bool = False):
+    """BooleanField"""
+    m = _django_models()
+    return m.BooleanField(default=ڈیفالٹ)
+
+
+def تاریخ_خانہ(*, خودکار: bool = False, آج: bool = False, اجازت: bool = False):
+    """DateField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    return m.DateField(auto_now=خودکار, auto_now_add=آج, blank=اجازت, null=اجازت)
+
+
+def وقت_خانہ(*, خودکار: bool = False, آج: bool = False, اجازت: bool = False):
+    """DateTimeField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    return m.DateTimeField(auto_now=خودکار, auto_now_add=آج, blank=اجازت, null=اجازت)
+
+
+def غیر_ملکی_کلید(ماڈل, *, حذف_پر: str = "CASCADE", اجازت: bool = False,
+                  متعلقہ_نام: str = "+"):
+    """ForeignKey — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    on_delete = getattr(m, حذف_پر, m.CASCADE)
+    return m.ForeignKey(ماڈل, on_delete=on_delete, blank=اجازت, null=اجازت,
+                        related_name=متعلقہ_نام)
+
+
+def ای_میل_خانہ(*, اجازت: bool = False, منفرد: bool = False):
+    """EmailField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    return m.EmailField(blank=اجازت, null=اجازت, unique=منفرد)
+
+
+def فائل_خانہ(فولڈر: str = "", *, اجازت: bool = False):
+    """FileField — اجازت=سچ sets blank=True, null=True"""
+    m = _django_models()
+    return m.FileField(upload_to=فولڈر, blank=اجازت, null=اجازت)
+
+
+# ─── ORM query shortcuts ──────────────────────────────────────────────────────
+
+def سب_حاصل(ماڈل):
+    """ماڈل.objects.all()"""
+    return ماڈل.objects.all()
+
+
+def فلٹر(ماڈل, **شرائط):
+    """ماڈل.objects.filter(**شرائط)"""
+    return ماڈل.objects.filter(**شرائط)
+
+
+def ایک_حاصل(ماڈل, **شرائط):
+    """ماڈل.objects.get(**شرائط)"""
+    return ماڈل.objects.get(**شرائط)
+
+
+def بنائیں(ماڈل, **قدریں):
+    """ماڈل.objects.create(**قدریں)"""
+    return ماڈل.objects.create(**قدریں)
+
+
+def حذف_کریں(ماڈل, **شرائط):
+    """ماڈل.objects.filter(**شرائط).delete()"""
+    return ماڈل.objects.filter(**شرائط).delete()
 
 
 class ڈجانگو_درمیانی:
@@ -1203,6 +1387,24 @@ HTTPClient        = جالی_کلائنٹ
 ڈجانگو_۴۰۴         = django_404
 ڈجانگو_حاصل_یا_۴۰۴ = django_get_or_404
 
+# Django ORM انگریزی عرفیات
+DjangoModel       = ڈجانگو_ماڈل
+CharField         = متن_خانہ
+TextField         = طویل_متن
+IntegerField      = عدد_خانہ
+DecimalField      = اعشاریہ_خانہ
+BooleanField      = بولین_خانہ
+DateField         = تاریخ_خانہ
+DateTimeField     = وقت_خانہ
+ForeignKeyField   = غیر_ملکی_کلید
+EmailField        = ای_میل_خانہ
+FileField_        = فائل_خانہ
+orm_all           = سب_حاصل
+orm_filter        = فلٹر
+orm_get           = ایک_حاصل
+orm_create        = بنائیں
+orm_delete        = حذف_کریں
+
 
 # ─── Exports ──────────────────────────────────────────────────────────────────
 
@@ -1229,6 +1431,12 @@ __all__ = [
     "ڈجانگو", "ڈجانگو_درمیانی", "ڈجانگو_آزمائش",
     "ڈجانگو_جواب", "ڈجانگو_جیسن", "ڈجانگو_رجوع",
     "ڈجانگو_سانچہ", "ڈجانگو_۴۰۴", "ڈجانگو_حاصل_یا_۴۰۴",
+    # Django ORM
+    "ڈجانگو_ماڈل",
+    "متن_خانہ", "طویل_متن", "عدد_خانہ", "اعشاریہ_خانہ",
+    "بولین_خانہ", "تاریخ_خانہ", "وقت_خانہ",
+    "غیر_ملکی_کلید", "ای_میل_خانہ", "فائل_خانہ",
+    "سب_حاصل", "فلٹر", "ایک_حاصل", "بنائیں", "حذف_کریں",
     # Django — English aliases
     "UrduDjango", "DjangoMiddleware", "DjangoTestClient",
     "django_response", "django_json", "django_redirect",

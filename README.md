@@ -25,13 +25,20 @@ The **Urdu Programming Language** lets you write real, working software using Ur
 
 - Object-oriented programming with Urdu class syntax
 - Async / await concurrency
-- FastAPI and Flask web servers
+- FastAPI, Flask, and Django web servers
+- Django ORM — models, CRUD, migrations, FK relations, JSON API
 - MySQL, PostgreSQL, MongoDB, Firebase, SQLite
 - Machine learning (scikit-learn, TensorFlow, NumPy, Pandas)
-- File I/O, ZIP, Excel, PDF
+- TensorBoard integration for ML training visualisation
+- File I/O, ZIP, Excel, PDF; file system / directory helpers
 - Cryptography (AES, RSA, HMAC, PBKDF2)
 - Web scraping (BeautifulSoup)
-- Threading and multiprocessing
+- Threading, multiprocessing, and Future-based task pools
+- Data structures (linked list, stack, queue, priority queue, BST, graph)
+- Algorithms (sorting, searching, hash table, GCD/LCM, KMP, LCS)
+- Urdu-aware text utilities (diacritic removal, numeral conversion, similarity)
+- Arduino / embedded hardware (pyfirmata2 — digital, analog, PWM, servo, I2C)
+- Smart error messages with Urdu "did you mean?" suggestions
 - A full interactive REPL
 
 ---
@@ -201,16 +208,21 @@ python -m urdu run hello.urdu
 
 | Import | Provides |
 |--------|---------|
-| `اردو/ویب` | FastAPI, Flask, WebSocket, Socket.IO, HTTP client |
+| `اردو/ویب` | FastAPI, Flask, Django + ORM, WebSocket, Socket.IO, HTTP client |
 | `اردو/ڈیٹا_بیس` | MySQL, PostgreSQL, MongoDB, Firebase, Cassandra, SQLite |
-| `اردو/فائلیں` | Text, CSV, JSON, ZIP, Excel, PDF |
+| `اردو/فائلیں` | Text, CSV, JSON, ZIP, Excel, PDF, file system helpers |
 | `اردو/رمز` | AES, RSA, HMAC, SHA, PBKDF2, Fernet |
 | `اردو/ذہین` | Pandas, NumPy, scikit-learn, TensorFlow |
 | `اردو/کھرچنی` | BeautifulSoup web scraper |
 | `اردو/لاگ` | Structured logging |
-| `اردو/دھاگہ` | Threading, multiprocessing, async tasks |
+| `اردو/دھاگہ` | Threading, multiprocessing, async tasks, futures |
 | `اردو/تاریخ` | Date, time, timezone, formatting |
 | `اردو/کرل` | HTTP client (aiohttp) |
+| `اردو/ڈھانچے` | Linked list, stack, queue, priority queue, BST, graph |
+| `اردو/الگورتھم` | Sorting, searching, hash table, math helpers, string algorithms |
+| `اردو/متن` | Urdu string ops, diacritic removal, numeral conversion, similarity |
+| `اردو/آردوینو` | Arduino hardware — digital/analog I/O, PWM, servo, I2C |
+| `اردو/ٹینسر_بورڈ` | TensorBoard — metric logging, histograms, Keras callback |
 
 ---
 

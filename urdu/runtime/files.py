@@ -8,8 +8,10 @@ Usage:
 
 from __future__ import annotations
 import os
+import shutil
 import zipfile as _zf
-from typing import Optional, List, Union
+from pathlib import Path as _Path
+from typing import Optional, List, Union, Callable
 from .builtins import _UrduObj
 
 
@@ -277,6 +279,227 @@ def ایکسل_لکھو(ڈیٹا: list, راستہ: str, ورق_نام: str = "S
     return راستہ
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  File Manager  (pathlib + shutil wrappers)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Path operations ───────────────────────────────────────────────────────────
+
+def راستہ_ملائیں(*اجزاء: str) -> str:
+    """Join path segments. Equivalent to os.path.join / Path(...)."""
+    return str(_Path(*اجزاء))
+
+
+def مطلق_راستہ(راستہ: str) -> str:
+    """Return the absolute path."""
+    return str(_Path(راستہ).resolve())
+
+
+def والد_فولڈر(راستہ: str) -> str:
+    """Return the parent directory of a path."""
+    return str(_Path(راستہ).parent)
+
+
+def فائل_نام(راستہ: str) -> str:
+    """Return the filename (last component) of a path."""
+    return _Path(راستہ).name
+
+
+def فائل_لاحقہ(راستہ: str) -> str:
+    """Return the file extension, e.g. '.txt'."""
+    return _Path(راستہ).suffix
+
+
+def فائل_موجود(راستہ: str) -> bool:
+    """True if path exists (file or directory)."""
+    return _Path(راستہ).exists()
+
+
+def فائل_ہے(راستہ: str) -> bool:
+    """True if path is a regular file."""
+    return _Path(راستہ).is_file()
+
+
+def فولڈر_ہے(راستہ: str) -> bool:
+    """True if path is a directory."""
+    return _Path(راستہ).is_dir()
+
+
+def فائل_سائز(راستہ: str) -> int:
+    """Return file size in bytes."""
+    return _Path(راستہ).stat().st_size
+
+
+# ── File operations ───────────────────────────────────────────────────────────
+
+def فائل_پڑھو(راستہ: str, انکوڈنگ: str = "utf-8") -> str:
+    """Read a text file and return its contents."""
+    return _Path(راستہ).read_text(encoding=انکوڈنگ)
+
+
+def فائل_لکھو(راستہ: str, مواد: str, انکوڈنگ: str = "utf-8") -> str:
+    """Write text to a file (overwrites). Returns the path."""
+    _Path(راستہ).write_text(مواد, encoding=انکوڈنگ)
+    return راستہ
+
+
+def فائل_شامل(راستہ: str, مواد: str, انکوڈنگ: str = "utf-8") -> str:
+    """Append text to a file. Returns the path."""
+    with open(راستہ, "a", encoding=انکوڈنگ) as fh:
+        fh.write(مواد)
+    return راستہ
+
+
+def فائل_کاپی(ماخذ: str, منزل: str) -> str:
+    """Copy a file from source to destination. Returns destination path."""
+    return str(shutil.copy2(ماخذ, منزل))
+
+
+def فائل_منتقل(ماخذ: str, منزل: str) -> str:
+    """Move a file or directory. Returns destination path."""
+    return str(shutil.move(ماخذ, منزل))
+
+
+def فائل_حذف(راستہ: str) -> None:
+    """Delete a file."""
+    _Path(راستہ).unlink(missing_ok=True)
+
+
+def فائل_نام_بدلیں(پرانا: str, نیا: str) -> str:
+    """Rename a file or directory. Returns new path."""
+    return str(_Path(پرانا).rename(نیا))
+
+
+# ── Directory operations ──────────────────────────────────────────────────────
+
+def فولڈر_بنائیں(راستہ: str, *, درمیانی: bool = True) -> str:
+    """Create directory (and parents by default). Returns the path."""
+    _Path(راستہ).mkdir(parents=درمیانی, exist_ok=True)
+    return راستہ
+
+
+def فولڈر_کاپی(ماخذ: str, منزل: str) -> str:
+    """Copy an entire directory tree. Returns destination path."""
+    return str(shutil.copytree(ماخذ, منزل))
+
+
+def فولڈر_حذف(راستہ: str) -> None:
+    """Delete a directory and all its contents."""
+    shutil.rmtree(راستہ, ignore_errors=True)
+
+
+def فولڈر_خالی_کریں(راستہ: str) -> None:
+    """Delete all contents of a directory but keep the directory itself."""
+    p = _Path(راستہ)
+    for child in p.iterdir():
+        if child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+
+
+# ── Search / listing ──────────────────────────────────────────────────────────
+
+def فولڈر_فہرست(راستہ: str = ".") -> List[str]:
+    """List all entries in a directory (names only)."""
+    return [e.name for e in _Path(راستہ).iterdir()]
+
+
+def فولڈر_فائلیں(راستہ: str = ".") -> List[str]:
+    """List only files in a directory (names only)."""
+    return [e.name for e in _Path(راستہ).iterdir() if e.is_file()]
+
+
+def فائل_تلاش(فولڈر: str, نمونہ: str = "*") -> List[str]:
+    """
+    Recursively search for files matching a glob pattern.
+    Example: فائل_تلاش(".", "*.txt") → ["./notes.txt", ...]
+    """
+    return [str(p) for p in _Path(فولڈر).rglob(نمونہ)]
+
+
+def فائل_تلاش_متن(فولڈر: str, متن: str, نمونہ: str = "*.txt",
+                   انکوڈنگ: str = "utf-8") -> List[dict]:
+    """
+    Search for text inside files matching a glob pattern.
+    Returns list of {فائل, سطر, مواد} dicts for each matching line.
+    """
+    results: List[dict] = []
+    for path in _Path(فولڈر).rglob(نمونہ):
+        if not path.is_file():
+            continue
+        try:
+            for i, line in enumerate(path.read_text(encoding=انکوڈنگ).splitlines(), 1):
+                if متن in line:
+                    results.append({"فائل": str(path), "سطر": i, "مواد": line.strip()})
+        except (OSError, UnicodeDecodeError):
+            pass
+    return results
+
+
+# ── File watcher (optional watchdog) ─────────────────────────────────────────
+
+class فائل_نگران:
+    """
+    Watch a directory for changes. Requires the `watchdog` package.
+
+    Usage:
+        ن = فائل_نگران(".", تبدیلی=lambda e: پرنٹ(e))
+        ن.شروع()
+        ...
+        ن.روکو()
+    """
+
+    def __init__(self, فولڈر: str = ".",
+                 تبدیلی: Callable = None,
+                 بنائی: Callable = None,
+                 حذف: Callable = None,
+                 منتقل: Callable = None,
+                 بار_بار: bool = True):
+        try:
+            from watchdog.observers import Observer
+            from watchdog.events import FileSystemEventHandler
+        except ImportError:
+            raise ImportError("فائل نگران کے لیے چلائیں: pip install watchdog")
+
+        self._path = str(_Path(فولڈر).resolve())
+        self._recursive = بار_بار
+
+        class _Handler(FileSystemEventHandler):
+            def on_modified(self, event):
+                if تبدیلی:
+                    تبدیلی(event.src_path)
+
+            def on_created(self, event):
+                if بنائی:
+                    بنائی(event.src_path)
+
+            def on_deleted(self, event):
+                if حذف:
+                    حذف(event.src_path)
+
+            def on_moved(self, event):
+                if منتقل:
+                    منتقل(event.src_path, event.dest_path)
+
+        self._observer = Observer()
+        self._observer.schedule(_Handler(), self._path, recursive=self._recursive)
+
+    def شروع(self) -> "فائل_نگران":
+        self._observer.start()
+        return self
+
+    def روکو(self) -> None:
+        self._observer.stop()
+        self._observer.join()
+
+    def __enter__(self):
+        return self.شروع()
+
+    def __exit__(self, *_):
+        self.روکو()
+
+
 # ── Exports ───────────────────────────────────────────────────────────────────
 
 __all__ = [
@@ -284,10 +507,29 @@ __all__ = [
     "زپ_فائل", "زپ_بناؤ", "زپ_نکالو", "زپ_فہرست",
     # Excel
     "ایکسل_کتاب", "ایکسل_ورق", "ایکسل_پڑھو", "ایکسل_لکھو",
+    # File Manager — path ops
+    "راستہ_ملائیں", "مطلق_راستہ", "والد_فولڈر", "فائل_نام", "فائل_لاحقہ",
+    "فائل_موجود", "فائل_ہے", "فولڈر_ہے", "فائل_سائز",
+    # File Manager — file ops
+    "فائل_پڑھو", "فائل_لکھو", "فائل_شامل",
+    "فائل_کاپی", "فائل_منتقل", "فائل_حذف", "فائل_نام_بدلیں",
+    # File Manager — directory ops
+    "فولڈر_بنائیں", "فولڈر_کاپی", "فولڈر_حذف", "فولڈر_خالی_کریں",
+    # File Manager — search/listing
+    "فولڈر_فہرست", "فولڈر_فائلیں", "فائل_تلاش", "فائل_تلاش_متن",
+    # File watcher
+    "فائل_نگران",
     # English aliases
     "ZipFile", "ExcelBook", "ExcelSheet",
     "zip_create", "zip_extract", "zip_list",
     "excel_read", "excel_write",
+    "path_join", "abs_path", "parent_dir", "file_name", "file_ext",
+    "file_exists", "is_file", "is_dir", "file_size",
+    "file_read", "file_write", "file_append",
+    "file_copy", "file_move", "file_delete", "file_rename",
+    "dir_create", "dir_copy", "dir_delete", "dir_clear",
+    "dir_list", "dir_files", "file_find", "file_find_text",
+    "FileWatcher",
 ]
 
 # English aliases
@@ -299,3 +541,29 @@ zip_extract = زپ_نکالو
 zip_list    = زپ_فہرست
 excel_read  = ایکسل_پڑھو
 excel_write = ایکسل_لکھو
+
+path_join    = راستہ_ملائیں
+abs_path     = مطلق_راستہ
+parent_dir   = والد_فولڈر
+file_name    = فائل_نام
+file_ext     = فائل_لاحقہ
+file_exists  = فائل_موجود
+is_file      = فائل_ہے
+is_dir       = فولڈر_ہے
+file_size    = فائل_سائز
+file_read    = فائل_پڑھو
+file_write   = فائل_لکھو
+file_append  = فائل_شامل
+file_copy    = فائل_کاپی
+file_move    = فائل_منتقل
+file_delete  = فائل_حذف
+file_rename  = فائل_نام_بدلیں
+dir_create   = فولڈر_بنائیں
+dir_copy     = فولڈر_کاپی
+dir_delete   = فولڈر_حذف
+dir_clear    = فولڈر_خالی_کریں
+dir_list     = فولڈر_فہرست
+dir_files    = فولڈر_فائلیں
+file_find    = فائل_تلاش
+file_find_text = فائل_تلاش_متن
+FileWatcher  = فائل_نگران

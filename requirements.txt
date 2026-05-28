@@ -12,6 +12,11 @@
 # ─── File I/O ────────────────────────────────
 # openpyxl                  # Excel .xlsx read/write
 # xlrd                      # Excel .xls read (legacy format)
+# watchdog                  # File system watcher (اردو/فائلیں — فائل_نگران)
+
+# ─── Arduino / Embedded ──────────────────────
+# pyserial                  # Serial port communication (اردو/آردوینو — سیریل)
+# pyfirmata2                # Firmata protocol for Arduino pin control (اردو/آردوینو — آردوینو)
 
 # ─── Databases ───────────────────────────────
 # mysql-connector-python    # MySQL
@@ -36,6 +41,9 @@
 # python-jose[cryptography] # JWT tokens
 # cryptography              # Cryptographic primitives
 # pycryptodome              # PyCryptodome (installed as Crypto)
+
+# ─── TensorBoard (metrics / training visualisation) ──────────────────────────
+# tensorboard                # TensorBoard standalone (اردو/ٹینسر_بورڈ — ٹینسر_لاگ, بورڈ_چلائیں)
 
 # ─── Machine Learning ────────────────────────
 # tensorflow                # TensorFlow + Keras

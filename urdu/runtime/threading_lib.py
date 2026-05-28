@@ -68,6 +68,10 @@ class دھاگہ_تالاب:
     def جمع_کرو(self, کام: Callable, *دلائل, **kwargs):
         return self._pool.submit(کام, *دلائل, **kwargs)
 
+    def جمع_کرو_مستقبل(self, کام: Callable, *دلائل, **kwargs) -> "مستقبل":
+        """Submit work and return a مستقبل (Future) wrapper."""
+        return مستقبل(self._pool.submit(کام, *دلائل, **kwargs))
+
     async def غیر_متزامن_جمع(self, کام: Callable, *دلائل):
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(self._pool, کام, *دلائل)
@@ -182,8 +186,13 @@ class قطار:
         self._q.put(آئٹم, timeout=وقفہ)
         return self
 
+    append = ڈالو   # English alias (transpiler: .شامل → .append)
+
     def نکالو(self, وقفہ: float = None) -> Any:
+        """Blocking dequeue. وقفہ: timeout in seconds (None = block forever)."""
         return self._q.get(timeout=وقفہ)
+
+    pop = نکالو   # English alias (transpiler maps .نکالو → .pop)
 
     def نکالو_نہ_رکو(self) -> Any:
         try:
@@ -195,6 +204,9 @@ class قطار:
         return self._q.empty()
 
     def لمبائی(self) -> int:
+        return self._q.qsize()
+
+    def __len__(self) -> int:
         return self._q.qsize()
 
     def مکمل(self):
@@ -214,7 +226,10 @@ class ترجیحی_قطار:
         self._q.put((ترجیح, آئٹم))
 
     def نکالو(self) -> tuple:
+        """Dequeue the (priority, item) pair with the lowest priority number."""
         return self._q.get()
+
+    pop = نکالو   # English alias (transpiler maps .نکالو → .pop)
 
 
 # ─── Timer ───────────────────────────────────────────────────────────────────
@@ -304,6 +319,116 @@ class AsyncLock:
         self._lock.release()
 
 
+# ─── Future ──────────────────────────────────────────────────────────────────
+
+class مستقبل:
+    """
+    Wraps concurrent.futures.Future with an Urdu-named API.
+
+    Usage:
+        تالاب = دھاگہ_تالاب(4)
+        م = تالاب.جمع_کرو_مستقبل(کام, دلیل1)
+        نتیجہ = م.نتیجہ(وقفہ=5)
+    """
+
+    def __init__(self, fut: concurrent.futures.Future):
+        self._fut = fut
+
+    def نتیجہ(self, وقفہ: float = None) -> Any:
+        """Block until result is ready, then return it."""
+        return self._fut.result(timeout=وقفہ)
+
+    def منسوخ(self) -> bool:
+        """Cancel the task if it hasn't started yet. Returns True on success."""
+        return self._fut.cancel()
+
+    def منسوخ_ہوا(self) -> bool:
+        """Return True if the task was cancelled."""
+        return self._fut.cancelled()
+
+    def مکمل(self) -> bool:
+        """Return True if done (finished or cancelled)."""
+        return self._fut.done()
+
+    def چل_رہا(self) -> bool:
+        """Return True if currently executing."""
+        return self._fut.running()
+
+    def غلطی(self) -> Optional[BaseException]:
+        """Return the exception raised, or None if succeeded."""
+        try:
+            return self._fut.exception()
+        except concurrent.futures.CancelledError:
+            return None
+
+    def مکمل_ہونے_پر(self, کال_بیک: Callable) -> "مستقبل":
+        """Register a callback fired when this future completes."""
+        self._fut.add_done_callback(lambda f: کال_بیک(مستقبل(f)))
+        return self
+
+    def __repr__(self) -> str:
+        state = "منسوخ" if self.منسوخ_ہوا() else ("مکمل" if self.مکمل() else "چل رہا")
+        return f"<مستقبل [{state}]>"
+
+
+# ─── Cancellable task ─────────────────────────────────────────────────────────
+
+class منسوخ_ہونے_والا:
+    """
+    Wraps a callable so it can be cooperatively cancelled via an event.
+
+    Usage:
+        def کام(رکو):
+            جبکہ نہ رکو.ہوا():
+                ...
+
+        م = منسوخ_ہونے_والا(کام)
+        م.شروع()
+        وقت.سو(2)
+        م.منسوخ()
+        م.انتظار()
+    """
+
+    def __init__(self, کام: Callable, *دلائل, نام: str = None):
+        self._stop_event = threading.Event()
+        self._fn = کام
+        self._args = دلائل
+        self._thread = threading.Thread(
+            target=self._run,
+            name=نام,
+            daemon=True,
+        )
+
+    def _run(self):
+        self._fn(self._stop_event, *self._args)
+
+    def شروع(self) -> "منسوخ_ہونے_والا":
+        self._thread.start()
+        return self
+
+    def منسوخ(self):
+        """Signal the task to stop."""
+        self._stop_event.set()
+
+    def انتظار(self, وقفہ: float = None):
+        self._thread.join(timeout=وقفہ)
+
+    def چل_رہا(self) -> bool:
+        return self._thread.is_alive()
+
+    def __repr__(self) -> str:
+        state = "چل رہا" if self.چل_رہا() else "بند"
+        return f"<منسوخ_ہونے_والا [{state}]>"
+
+
+# ─── Async future helper ──────────────────────────────────────────────────────
+
+async def غیر_متزامن_مستقبل(تالاب: دھاگہ_تالاب, کام: Callable, *دلائل) -> Any:
+    """Run a sync callable in a thread pool and await its result."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(تالاب._pool, کام, *دلائل)
+
+
 # ─── Thread-local storage ────────────────────────────────────────────────────
 
 class مقامی_ذخیرہ:
@@ -324,6 +449,7 @@ __all__ = [
     "تالہ", "واقعہ", "سیمافور",
     "قطار", "ترجیحی_قطار",
     "ٹائمر", "وقفہ_ٹائمر",
-    "غیر_متزامن_چلائیں", "نئی_قطار_async", "AsyncLock",
+    "مستقبل", "منسوخ_ہونے_والا",
+    "غیر_متزامن_چلائیں", "غیر_متزامن_مستقبل", "نئی_قطار_async", "AsyncLock",
     "مقامی_ذخیرہ",
 ]

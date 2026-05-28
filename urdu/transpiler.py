@@ -18,6 +18,11 @@ _MODULE_MAP = {
     "اردو/کرل":          "urdu.runtime.curl",
     "اردو/کھرچنی":       "urdu.runtime.scraper",
     "اردو/فائلیں":       "urdu.runtime.files",
+    "اردو/آردوینو":      "urdu.runtime.arduino",
+    "اردو/ٹینسر_بورڈ":  "urdu.runtime.tensorboard_lib",
+    "اردو/ڈھانچے":       "urdu.runtime.structures",
+    "اردو/الگورتھم":     "urdu.runtime.algorithms",
+    "اردو/متن":          "urdu.runtime.text_lib",
     "اردو/پایتھن":       None,   # passthrough to Python stdlib
 }
 
@@ -167,6 +172,8 @@ class Transpiler:
 
     def _s_ClassDecl(self, node: ClassDecl):
         self._blank()
+        for dec in getattr(node, "decorators", []):
+            self._w(f"@{self._expr(dec.expression)}")
         base = f"({self._expr(node.superclass)})" if node.superclass else ""
         self._w(f"class {node.name}{base}:")
         self._ind()

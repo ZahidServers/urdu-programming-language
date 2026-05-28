@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import re
+import difflib
 
 # ── Exception type names ──────────────────────────────────────────────────────
 
@@ -517,6 +518,41 @@ def _translate_message(msg: str) -> str | None:
                 return template.format(**m.groupdict())
             except KeyError:
                 return template
+    return None
+
+
+def did_you_mean(name: str, candidates: list[str], n: int = 3, cutoff: float = 0.6) -> list[str]:
+    """Return up to *n* close matches for *name* from *candidates*."""
+    return difflib.get_close_matches(name, candidates, n=n, cutoff=cutoff)
+
+
+def suggest_name(name: str, frame_locals: dict, frame_globals: dict) -> str | None:
+    """
+    Given an undefined name and the surrounding scope dicts, return a
+    human-readable Urdu hint like  'شاید آپ کا مطلب تھا: نام1، نام2'
+    or None if no good match is found.
+    """
+    pool = list(frame_locals) + list(frame_globals)
+    matches = did_you_mean(name, pool)
+    if matches:
+        joined = "، ".join(matches)
+        return f"شاید آپ کا مطلب تھا: {joined}"
+    return None
+
+
+def suggest_attr(attr: str, obj) -> str | None:
+    """
+    Given a missing attribute name and the object it was accessed on,
+    return a Urdu hint or None.
+    """
+    try:
+        members = dir(obj)
+    except Exception:
+        return None
+    matches = did_you_mean(attr, members)
+    if matches:
+        joined = "، ".join(matches)
+        return f"شاید آپ کا مطلب تھا: {joined}"
     return None
 
 

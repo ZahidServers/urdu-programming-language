@@ -148,8 +148,23 @@ class UrduCompiler:
                         urdu_line = int(_m.group(1))
                         break
 
-            from .error_messages import translate_error
+            from .error_messages import translate_error, suggest_name, suggest_attr
             urdu_type, urdu_msg = translate_error(e)
+
+            # Build did-you-mean hint for NameError / AttributeError
+            hint = None
+            if isinstance(e, NameError):
+                bad = getattr(e, "name", None)
+                if bad is None:
+                    _nm = _re.search(r"name '([^']+)' is not defined", str(e))
+                    bad = _nm.group(1) if _nm else None
+                if bad:
+                    hint = suggest_name(bad, ns, ns)
+            elif isinstance(e, AttributeError):
+                bad = getattr(e, "name", None)
+                obj = getattr(e, "obj", None)
+                if bad and obj is not None:
+                    hint = suggest_attr(bad, obj)
 
             print(f"\nاردو غلطی (Runtime Error):", file=sys.stderr)
             if urdu_line and urdu_src:
@@ -163,6 +178,8 @@ class UrduCompiler:
                 print(f"  {display_type}: {display_msg}", file=sys.stderr)
             else:
                 print(f"  {type(e).__name__}: {e}", file=sys.stderr)
+            if hint:
+                print(f"  💡 {hint}", file=sys.stderr)
             if self.debug:
                 print("\n--- Python Traceback (--debug) ---", file=sys.stderr)
                 traceback.print_exc()

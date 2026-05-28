@@ -1,0 +1,45 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}کتابستان — کتابیں{% بلاک_ختم %}
+{% بلاک مواد %}
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h2>📖 کتابیں</h2>
+    <a href="/کتاب/نئی/" class="btn btn-green">+ نئی کتاب</a>
+  </div>
+
+  <form method="get" style="margin:12px 0;">
+    <input name="q" value="{{ تلاش }}" placeholder="کتاب یا مصنف تلاش کریں..."
+           style="padding:8px 12px;width:300px;border:1px solid #ddd;border-radius:4px;">
+    <button type="submit" class="btn btn-blue" style="margin-right:8px;">تلاش</button>
+    {% اگر تلاش %}<a href="/کتابیں/" class="btn">صاف</a>{% اگر_ختم %}
+  </form>
+
+  {% اگر کتابیں %}
+  <table>
+    <tr><th>عنوان</th><th>مصنف</th><th>ناشر</th><th>قیمت</th><th>دستیاب</th><th>عمل</th></tr>
+    {% کے_لیے ک کا کتابیں %}
+    <tr>
+      <td>{{ ک.عنوان }}</td>
+      <td>{{ ک.مصنف }}</td>
+      <td>{{ ک.ناشر_کتاب.نام }}</td>
+      <td>{{ ک.قیمت }} روپے</td>
+      <td>
+        {% اگر ک.دستیاب %}
+          <span class="badge badge-yes">دستیاب</span>
+        {% ورنہ %}
+          <span class="badge badge-no">نادستیاب</span>
+        {% اگر_ختم %}
+      </td>
+      <td>
+        <a href="/کتاب/{{ ک.id }}/ترمیم/" class="btn btn-blue" style="font-size:0.8rem">ترمیم</a>
+        <a href="/کتاب/{{ ک.id }}/حذف/" class="btn btn-red" style="font-size:0.8rem"
+           onclick="return confirm('حذف کریں؟')">حذف</a>
+      </td>
+    </tr>
+    {% کے_لیے_ختم %}
+  </table>
+  {% ورنہ %}
+  <p>کوئی کتاب نہیں۔ <a href="/کتاب/نئی/">پہلی کتاب شامل کریں</a></p>
+  {% اگر_ختم %}
+</div>
+{% بلاک_ختم %}

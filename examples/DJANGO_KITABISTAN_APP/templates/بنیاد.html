@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ur">
+<head>
+<meta charset="UTF-8">
+<title>{% بلاک عنوان %}کتابستان{% بلاک_ختم %}</title>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background:#f5f5f5; color:#222; margin:0; padding:0; direction:rtl; }
+  header { background:#2c3e50; color:#fff; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
+  header h1 { margin:0; font-size:1.6rem; }
+  nav a { color:#ecf0f1; text-decoration:none; margin-left:20px; font-size:0.95rem; }
+  nav a:hover { text-decoration:underline; }
+  main { max-width:960px; margin:32px auto; padding:0 16px; }
+  .card { background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:24px; margin-bottom:20px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:10px 14px; text-align:right; border-bottom:1px solid #eee; }
+  th { background:#f0f4f8; font-weight:600; }
+  .btn { display:inline-block; padding:8px 18px; border-radius:4px; text-decoration:none; font-size:0.9rem; cursor:pointer; border:none; }
+  .btn-blue { background:#2980b9; color:#fff; }
+  .btn-green { background:#27ae60; color:#fff; }
+  .btn-red { background:#e74c3c; color:#fff; }
+  .badge { padding:3px 10px; border-radius:12px; font-size:0.8rem; }
+  .badge-yes { background:#d4edda; color:#155724; }
+  .badge-no  { background:#f8d7da; color:#721c24; }
+  footer { text-align:center; padding:24px; color:#888; font-size:0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 کتابستان</h1>
+  <nav>
+    <a href="/">گھر</a>
+    <a href="/کتابیں/">کتابیں</a>
+    <a href="/ناشرین/">ناشرین</a>
+    <a href="/api/کتابیں/">API</a>
+  </nav>
+</header>
+<main>{% بلاک مواد %}{% بلاک_ختم %}</main>
+<footer>اردو پروگرامنگ لینگویج — کتابستان مثال</footer>
+</body>
+</html>

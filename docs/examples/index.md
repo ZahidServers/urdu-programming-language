@@ -25,6 +25,7 @@ Complete, runnable program examples for the Urdu Programming Language. Every exa
 | [Flask Billing System](flask-billing.md) | Flask + SQLite | Invoice management with async DB helpers | `FLASK_BILLING_APP/` |
 | [Flask MySQL Books](flask-mysql-books.md) | Flask + MySQL | Library catalogue with search and pagination | `FLASK_MYSQL_BOOKS_APP/` |
 | [Django Calculator](django-calc.md) | Django + Socket.IO | Real-time calculator with history | `DJANGO_CALC_APP/` |
+| [Django Kitabistan](django-kitabistan.md) | Django ORM | Full CRUD app — ORM models, FK relations, JSON API, middleware | `DJANGO_KITABISTAN_APP/` |
 
 ---
 

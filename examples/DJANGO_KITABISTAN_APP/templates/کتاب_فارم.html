@@ -1,0 +1,44 @@
+{% توسیع "بنیاد.html" %}
+{% بلاک عنوان %}کتابستان — {{ عنوان }}{% بلاک_ختم %}
+{% بلاک مواد %}
+<div class="card" style="max-width:520px;margin:0 auto;">
+  <h2>{{ عنوان }}</h2>
+  <form method="post">
+    <div style="margin-bottom:14px;">
+      <label>عنوان</label><br>
+      <input name="عنوان" value="{{ کتاب.عنوان|پہلے_سے:'' }}" required
+             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:4px;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>مصنف</label><br>
+      <input name="مصنف" value="{{ کتاب.مصنف|پہلے_سے:'' }}" required
+             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:4px;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>ناشر</label><br>
+      <select name="ناشر_id" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:4px;">
+        {% کے_لیے ن کا ناشرین %}
+          <option value="{{ ن.id }}">{{ ن.نام }}</option>
+        {% کے_لیے_ختم %}
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label>قیمت</label><br>
+      <input name="قیمت" type="number" step="0.01" value="{{ کتاب.قیمت|پہلے_سے:'0' }}"
+             style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;margin-top:4px;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label>
+        {% اگر کتاب.دستیاب %}
+          <input type="checkbox" name="دستیاب" checked>
+        {% ورنہ %}
+          <input type="checkbox" name="دستیاب">
+        {% اگر_ختم %}
+        دستیاب
+      </label>
+    </div>
+    <button type="submit" class="btn btn-green">محفوظ کریں</button>
+    <a href="/کتابیں/" class="btn" style="background:#95a5a6;color:#fff;margin-right:8px;">منسوخ</a>
+  </form>
+</div>
+{% بلاک_ختم %}

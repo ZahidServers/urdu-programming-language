@@ -104,6 +104,11 @@ FILES = {
     "xlrd":     "xlrd",     # optional — not always installed
 }
 
+EMBEDDED = {
+    "serial":     "pyserial",   # اردو/آردوینو — raw serial
+    "pyfirmata2": "pyfirmata2", # اردو/آردوینو — Firmata (optional)
+}
+
 DB = {
     "psycopg2":       "psycopg2 (PostgreSQL)",
     "pymysql":        "PyMySQL",               # optional
@@ -130,6 +135,10 @@ ML = {
     "torch":          "PyTorch",
     "matplotlib":     "matplotlib",
     "PIL":            "Pillow",
+}
+
+TB = {
+    "tensorboard":    "TensorBoard (standalone, no TF needed)",
 }
 
 TF = {
@@ -214,7 +223,7 @@ def build(fast: bool = False, onefile: bool = False,
     all_pkgs: list[str] = []
     skipped: list[tuple[str, str]] = []
 
-    groups = [CORE, WEB, HTTP, SCRAPING, FILES, CRYPTO]
+    groups = [CORE, WEB, HTTP, SCRAPING, FILES, CRYPTO, EMBEDDED, TB]
     if not fast:
         groups += [DB, ML]
     if include_tf:
@@ -235,8 +244,8 @@ def build(fast: bool = False, onefile: bool = False,
         "--windows-console-mode=attach",
         # icon + version branding (embedded by Nuitka at compile time)
         f"--windows-icon-from-ico={ICO}",
-        "--windows-file-version=1.0.0.0",
-        "--windows-product-version=1.0.0.0",
+        "--windows-file-version=1.0.1.0",
+        "--windows-product-version=1.0.1.0",
         "--windows-file-description=Urdu Programming Language Runtime Engine",
         "--windows-company-name=Webaon",
         "--windows-product-name=Urdu",

@@ -10,16 +10,21 @@ The Urdu Programming Language ships with a rich set of built-in library modules.
 
 | Module | Import path | Install | What it provides |
 |--------|-------------|---------|-----------------|
-| [Web Framework](web.md) | `"اردو/ویب"` | `pip install fastapi flask django uvicorn python-socketio websockets` | FastAPI, Flask, Django, WebSocket, Socket.IO, HTTP client |
+| [Web Framework](web.md) | `"اردو/ویب"` | `pip install fastapi flask django uvicorn python-socketio websockets` | FastAPI, Flask, Django + ORM, WebSocket, Socket.IO, HTTP client |
 | [Database](database.md) | `"اردو/ڈیٹا_بیس"` | `pip install mysql-connector-python psycopg2-binary pymongo aiosqlite` | SQLite, MySQL, PostgreSQL, MongoDB, Firebase, Cassandra |
 | [Machine Learning](ml.md) | `"اردو/ذہین"` | `pip install numpy pandas scikit-learn tensorflow` | NumPy, Pandas, scikit-learn, TensorFlow, Keras, LLMs |
 | [Cryptography](crypto.md) | `"اردو/رمز"` | `pip install cryptography bcrypt python-jose` | Hashing, Fernet, AES-256-GCM, RSA |
 | [HTTP Client](http.md) | `"اردو/کرل"` | `pip install requests httpx aiohttp pycurl` | GET, POST, file upload, REST APIs |
 | [Web Scraping](scraper.md) | `"اردو/کھرچنی"` | `pip install beautifulsoup4 lxml` | HTML parsing, CSS selectors, live fetching |
-| [File Utilities](files.md) | `"اردو/فائلیں"` | `pip install openpyxl xlrd` | ZIP archives, Excel (.xlsx), CSV |
-| [Threading](threading.md) | `"اردو/دھاگہ"` | *(built-in)* | Threads, thread pools, process pools, locks, events |
+| [File Utilities](files.md) | `"اردو/فائلیں"` | `pip install openpyxl xlrd` | ZIP archives, Excel (.xlsx), CSV, path/dir helpers |
+| [Threading](threading.md) | `"اردو/دھاگہ"` | *(built-in)* | Threads, thread pools, process pools, locks, events, futures |
 | [Date & Time](datetime.md) | `"اردو/تاریخ"` | *(built-in)* | Gregorian dates, Islamic/Hijri calendar, durations |
 | [Logging](logging.md) | `"اردو/لاگ"` | `pip install colorlog` | Structured logging, colours, file rotation, JSON |
+| [Data Structures](structures.md) | `"اردو/ڈھانچے"` | *(built-in)* | Linked list, stack, queue, deque, priority queue, BST, graph |
+| [Algorithms](algorithms.md) | `"اردو/الگورتھم"` | *(built-in)* | Sorting, searching, hash table, math (GCD/LCM/sieve), string algorithms |
+| [Text Utilities](text.md) | `"اردو/متن"` | *(built-in)* | Urdu-aware string ops, diacritic removal, numeral conversion, similarity |
+| [Arduino / Embedded](arduino.md) | `"اردو/آردوینو"` | `pip install pyfirmata2 pyserial` | Arduino boards, digital/analog I/O, PWM, servo, I2C, callbacks |
+| [TensorBoard](tensorboard.md) | `"اردو/ٹینسر_بورڈ"` | `pip install tensorboard` | Metric logging, histograms, images, HParams, Keras callback |
 
 ---
 

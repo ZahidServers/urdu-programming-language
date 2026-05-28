@@ -4,18 +4,18 @@
 ║         Urdu Programming Language                      ║
 ╠══════════════════════════════════════════════════════╣
 ║  Developer : Mohammed Zahid Wadiwale                   ║
-║  Version   : 1.0.0                                     ║
+║  Version   : 1.0.1                                     ║
 ║  Platform  : Windows | Linux | macOS                   ║
 ║  License   : MIT                                       ║
 ╚══════════════════════════════════════════════════════╝
 """
 
-VERSION = "1.0.0"
-VERSION_TUPLE = (1, 0, 0)
+VERSION = "1.0.1"
+VERSION_TUPLE = (1, 0, 1)
 DEVELOPER = "Mohammed Zahid Wadiwale"
 LANGUAGE_NAME = "اردو پروگرامنگ لینگویج"
 LANGUAGE_NAME_EN = "Urdu Programming Language"
-RELEASE_DATE = "2026-05-16"
+RELEASE_DATE = "2026-05-28"
 
 
 def version_info() -> str:
@@ -29,7 +29,7 @@ def version_info() -> str:
         f"  Developer : {DEVELOPER}",
         f"  Released  : {RELEASE_DATE}",
         "  Platform  : Windows | Linux | macOS",
-        "  Features  : OOP | Async | GUI | ML | DB | Web | Threads",
+        "  Features  : OOP | Async | GUI | ML | DB | Web | Threads | TensorBoard | Arduino | DataStructures | Algorithms | Text",
         "  License   : MIT",
         line,
     ]

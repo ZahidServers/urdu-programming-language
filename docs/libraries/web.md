@@ -1079,6 +1079,170 @@ The `ڈجانگو` class wires everything together internally:
 
 ---
 
+## Django ORM — ڈجانگو ORM
+
+Full Django ORM support is available from `اردو/ویب`. Define models by extending `ڈجانگو_ماڈل`, then use the query helpers to create, read, update, and delete rows.
+
+> **اردو:** مکمل Django ORM سپورٹ `اردو/ویب` سے دستیاب ہے۔ `ڈجانگو_ماڈل` کو توسیع دے کر ماڈل بنائیں، پھر CRUD کے لیے کوئری مددگار استعمال کریں۔
+
+**Import:**
+
+```urdu
+درآمد {
+    ڈجانگو_ماڈل,
+    متن_خانہ, طویل_متن, عدد_خانہ, اعشاریہ_خانہ,
+    بولین_خانہ, تاریخ_خانہ, وقت_خانہ,
+    غیر_ملکی_کلید, ای_میل_خانہ, فائل_خانہ,
+    سب_حاصل, فلٹر, ایک_حاصل, بنائیں, حذف_کریں
+} سے "اردو/ویب";
+```
+
+---
+
+### Model Definition — ماڈل کی تعریف
+
+```urdu
+کلاس مصنوعہ توسیع ڈجانگو_ماڈل {
+    جامد نام        = متن_خانہ(200)
+    جامد تفصیل     = طویل_متن(اجازت=سچ)
+    جامد قیمت       = اعشاریہ_خانہ(10, 2)
+    جامد دستیاب     = بولین_خانہ(ڈیفالٹ=سچ)
+    جامد ای_میل     = ای_میل_خانہ(منفرد=سچ)
+}
+```
+
+**Rules:**
+- Always extend `ڈجانگو_ماڈل`.
+- Declare every field with `جامد` — the transpiler emits class-level attributes, which Django's `ModelBase` metaclass requires.
+- **Never use `خالی=سچ`** — `خالی` is a reserved keyword that transpiles to `None`, creating invalid Python syntax. Use `اجازت=سچ` instead.
+
+> **اردو:** ہر فیلڈ `جامد` سے شروع ہو، اور `خالی=سچ` کی بجائے `اجازت=سچ` استعمال کریں۔
+
+---
+
+### Field Types — خانہ کی اقسام
+
+| Urdu | Django equivalent | Parameters |
+|------|-------------------|------------|
+| `متن_خانہ(n)` | `CharField(max_length=n)` | `اجازت`, `ڈیفالٹ`, `منفرد` |
+| `طویل_متن()` | `TextField()` | `اجازت`, `ڈیفالٹ` |
+| `عدد_خانہ()` | `IntegerField()` | `اجازت`, `ڈیفالٹ` |
+| `اعشاریہ_خانہ(کل, اعشاریہ)` | `DecimalField(max_digits, decimal_places)` | `اجازت`, `ڈیفالٹ` |
+| `بولین_خانہ()` | `BooleanField()` | `ڈیفالٹ` |
+| `تاریخ_خانہ()` | `DateField()` | `خودکار`, `آج`, `اجازت` |
+| `وقت_خانہ()` | `DateTimeField()` | `خودکار`, `آج`, `اجازت` |
+| `ای_میل_خانہ()` | `EmailField()` | `اجازت`, `منفرد` |
+| `فائل_خانہ(فولڈر)` | `FileField(upload_to=...)` | `اجازت` |
+| `غیر_ملکی_کلید(Model, متعلقہ_نام="...")` | `ForeignKey(Model, on_delete=CASCADE, related_name="...")` | `اجازت`, `حذف_پر` |
+
+---
+
+### Foreign Key Relations — غیر ملکی کلید
+
+```urdu
+کلاس زمرہ توسیع ڈجانگو_ماڈل {
+    جامد نام = متن_خانہ(100)
+}
+
+کلاس مصنوعہ توسیع ڈجانگو_ماڈل {
+    جامد نام    = متن_خانہ(200)
+    جامد زمرہ_م = غیر_ملکی_کلید(زمرہ, متعلقہ_نام="مصنوعات")
+}
+```
+
+Access the related object:
+
+```urdu
+متغیر م = ایک_حاصل(مصنوعہ, id=1);
+لکھو(م.زمرہ_م.نام);         // forward: get the category
+
+متغیر ز = ایک_حاصل(زمرہ, id=1);
+لکھو(ز.مصنوعات.count());    // reverse: count products in this category
+```
+
+---
+
+### Table Creation — میزیں بنانا
+
+```urdu
+ایپ.میزیں_بنائیں();
+```
+
+Runs Django's schema editor to `CREATE TABLE IF NOT EXISTS` for every `ڈجانگو_ماڈل` subclass. Safe to call on every startup — skips tables that already exist.
+
+---
+
+### Query Helpers — کوئری مددگار
+
+| Helper | Returns | Django equivalent |
+|--------|---------|-------------------|
+| `سب_حاصل(Model)` | QuerySet | `Model.objects.all()` |
+| `فلٹر(Model, **kwargs)` | QuerySet | `Model.objects.filter(**kwargs)` |
+| `ایک_حاصل(Model, **kwargs)` | Model instance | `Model.objects.get(**kwargs)` |
+| `بنائیں(Model, **kwargs)` | Model instance | `Model.objects.create(**kwargs)` |
+| `حذف_کریں(Model, **kwargs)` | — | `Model.objects.get(**kwargs).delete()` |
+
+All helpers return full Django ORM objects — every QuerySet method (`.count()`, `.order_by()`, `.select_related()`, field lookups like `__icontains`, `__gte`) works normally.
+
+**Examples:**
+
+```urdu
+// تمام دستیاب مصنوعات
+متغیر qs = فلٹر(مصنوعہ, دستیاب=سچ);
+
+// عنوان میں تلاش
+متغیر qs = مصنوعہ.objects.filter(نام__icontains="قلم");
+
+// قیمت کے ساتھ کم از کم
+متغیر qs = مصنوعہ.objects.filter(قیمت__gte=100).order_by("قیمت");
+
+// شامل کریں
+متغیر ز = بنائیں(زمرہ, نام="کتب");
+متغیر م = بنائیں(مصنوعہ, نام="اردو لغت", قیمت=350, زمرہ_م=ز);
+
+// تازہ کریں
+م.قیمت = 400;
+م.save();
+
+// حذف کریں
+حذف_کریں(مصنوعہ, id=م.id);
+```
+
+---
+
+### Response Helpers — جواب مددگار
+
+| Helper | Description |
+|--------|-------------|
+| `ڈجانگو_سانچہ(req, template, ctx)` | Render a template and return `HttpResponse` |
+| `ڈجانگو_جواب(body, status=200)` | Plain `HttpResponse` with optional status code |
+| `ڈجانگو_جیسن(data, status=200)` | `JsonResponse` — serialises dict or list to JSON |
+| `ڈجانگو_رجوع(url)` | `HttpResponseRedirect(url)` — redirect to another URL |
+
+---
+
+### Server Startup — سرور شروع کرنا
+
+```urdu
+ایپ.چلائیں(پورٹ=8000)
+```
+
+Starts Django's development WSGI server on the given port. Passes `--noreload` by default — this prevents the auto-reloader from spawning a child process (which would recreate the in-process state and break single-file apps). Re-enable with:
+
+```urdu
+ایپ.چلائیں(پورٹ=8000, دوبارہ_لوڈ=سچ)
+```
+
+> **اردو:** `ایپ.چلائیں()` بطور ڈیفالٹ `--noreload` پاس کرتا ہے — یہ ضروری ہے کیونکہ آٹو ری لوڈر چائلڈ پروسیس بناتا ہے جو `اردو/ویب` کے اندرونی ترتیب کو توڑ دیتا ہے۔
+
+---
+
+### Full Example — مکمل مثال
+
+See [Django Kitabistan App](../examples/django-kitabistan.md) for a complete working example with two related ORM models, CRUD views, JSON API, middleware, and Urdu templates.
+
+---
+
 ## Urdu Jinja2 / Django Templates — اردو سانچے
 
 Flask's Jinja2 and Django's template engine both support **Urdu tag keywords** natively. The Urdu runtime preprocesses `.html` template files before the engine sees them, so all standard Jinja2/Django features work as normal — just written in Urdu.

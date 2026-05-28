@@ -35,7 +35,7 @@ The language was created to make programming genuinely accessible to Urdu-speaki
 
 **Mohammed Zahid Wadiwale**
 Developer and designer of the Urdu Programming Language.
-Version 1.0.0 — Released 2026-05-16
+Version 1.0.1 — Released 2026-05-29
 License: MIT
 
 > **اردو:** **محمد زاہد وڈیوالے** — اردو پروگرامنگ لینگویج کے ڈویلپر اور ڈیزائنر۔
@@ -55,17 +55,24 @@ License: MIT
 | **Exception handling** | `کوشش` / `پکڑو` / `آخر` (try / catch / finally) |
 | **Generators** | `پیداوار` (yield) |
 | **Modules** | `درآمد` / `سے` / `برآمد` (import / from / export) |
-| **Web framework** | FastAPI, Flask, Django, WebSocket, Socket.IO wrappers in `اردو/ویب` |
+| **Web framework** | FastAPI, Flask, Django + full ORM, WebSocket, Socket.IO via `اردو/ویب` |
+| **Django ORM** | Models (`ڈجانگو_ماڈل`), 10 field types, FK, CRUD helpers, JSON API |
 | **Databases** | SQLite, MySQL, PostgreSQL, MongoDB, Firebase via `اردو/ڈیٹا_بیس` |
 | **Machine learning** | NumPy, Pandas, scikit-learn, TensorFlow, llama.cpp via `اردو/ذہین` |
+| **TensorBoard** | Metric logging, histograms, Keras callback via `اردو/ٹینسر_بورڈ` |
 | **Cryptography** | AES, RSA, hashing, JWT via `اردو/رمز` |
 | **GUI** | Tkinter wrappers via `اردو/گوئی` |
 | **HTTP / cURL** | requests, httpx, aiohttp via `اردو/کرل` |
 | **Web scraping** | BeautifulSoup4, lxml via `اردو/کھرچنی` |
-| **File I/O** | ZIP, Excel (.xlsx), CSV, text via `اردو/فائلیں` |
-| **Threading** | `threading` and `asyncio` wrappers via `اردو/دھاگہ` |
+| **File I/O** | ZIP, Excel (.xlsx), CSV, text, file system helpers via `اردو/فائلیں` |
+| **Threading** | Threads, process pools, futures, cancellable tasks via `اردو/دھاگہ` |
+| **Data structures** | Linked list, stack, queue, priority queue, BST, graph via `اردو/ڈھانچے` |
+| **Algorithms** | Sorting, searching, hash table, GCD/LCM, KMP, LCS via `اردو/الگورتھم` |
+| **Text utilities** | Urdu string ops, diacritics, numeral conversion, similarity via `اردو/متن` |
+| **Arduino** | Digital/analog I/O, PWM, servo, I2C, callbacks via `اردو/آردوینو` |
 | **Date / time** | `datetime`, `time` wrappers via `اردو/تاریخ` |
 | **Logging** | Coloured structured logging via `اردو/لاگ` |
+| **Smart errors** | "کیا آپ کا مطلب تھا؟" suggestions on `NameError` / `AttributeError` |
 | **Standalone EXE** | Compile to `urdu.exe` with Nuitka — no Python needed |
 | **Interactive REPL** | `python -m urdu repl` — live coding in Urdu |
 | **MIT license** | Free and open source |
@@ -158,17 +165,22 @@ All async constructs cause the script to be wrapped in
 
 | Import path | Contents |
 |---|---|
-| `اردو/ویب` | FastAPI, Flask, Django, WebSocket, Socket.IO, WebRTC |
+| `اردو/ویب` | FastAPI, Flask, Django + ORM, WebSocket, Socket.IO, WebRTC |
 | `اردو/ڈیٹا_بیس` | SQLite, MySQL, PostgreSQL, MongoDB, Firebase, Cassandra |
 | `اردو/ذہین` | NumPy, Pandas, scikit-learn, TensorFlow, Keras, llama.cpp |
 | `اردو/رمز` | AES, RSA, hashing (SHA/MD5/bcrypt), JWT |
 | `اردو/گوئی` | Tkinter GUI windows, widgets, dialogs |
 | `اردو/کرل` | HTTP GET/POST (requests, httpx, aiohttp, pycurl) |
 | `اردو/کھرچنی` | HTML scraping — BeautifulSoup4, lxml |
-| `اردو/فائلیں` | ZIP, Excel (.xlsx/.xls), CSV, plain text |
-| `اردو/دھاگہ` | threads, thread pools, asyncio tasks |
+| `اردو/فائلیں` | ZIP, Excel (.xlsx/.xls), CSV, plain text, file system helpers |
+| `اردو/دھاگہ` | threads, thread pools, futures, cancellable tasks, asyncio |
 | `اردو/تاریخ` | date, time, timedelta, formatting |
 | `اردو/لاگ` | coloured log levels: معلومات, انتباہ, خطا |
+| `اردو/ڈھانچے` | linked list, stack, queue, deque, priority queue, BST, graph |
+| `اردو/الگورتھم` | sorting, searching, hash table, math, string algorithms |
+| `اردو/متن` | Urdu string ops, diacritics, numeral conversion, similarity |
+| `اردو/آردوینو` | Arduino/Firmata — digital/analog I/O, PWM, servo, I2C |
+| `اردو/ٹینسر_بورڈ` | TensorBoard — metrics, histograms, Keras callback |
 | `اردو/پایتھن` | direct Python stdlib passthrough |
 
 > **اردو:** یہ اردو پروگرامنگ لینگویج کی بلٹ-ان لائبریریاں ہیں۔ ویب ایپلیکیشن بنانی ہو، ڈیٹا بیس استعمال کرنی ہو، مشین لرننگ کرنی ہو یا فائلیں پڑھنی ہوں — سب کچھ اردو ناموں کے ساتھ دستیاب ہے۔

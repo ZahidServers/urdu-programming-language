@@ -31,6 +31,15 @@ def _build_parser() -> argparse.ArgumentParser:
   urdu compile hello.urdu          -- Python میں کمپائل کریں
   urdu repl                        -- انٹرایکٹو موڈ
   urdu version                     -- نسخہ دیکھیں
+  urdu نصب flask                   -- پیکج نصب کریں
+  urdu ہٹائیں flask                -- پیکج ہٹائیں
+  urdu فہرست                       -- نصب شدہ پیکجز
+  urdu فہرست django                -- نام سے تلاش
+  urdu تازہ_کریں flask             -- پیکج اپ گریڈ
+  urdu ماحول بنائیں myenv          -- ورچوئل ماحول بنائیں
+  urdu ماحول چالو myenv            -- ماحول چالو کریں
+  urdu بورڈ چلائیں                 -- TensorBoard چلائیں (logs/ فولڈر)
+  urdu بورڈ چلائیں runs/ --پورٹ 8008 -- مخصوص فولڈر اور پورٹ
 
 Developer: {DEVELOPER}
 Version  : {VERSION}
@@ -58,6 +67,26 @@ Version  : {VERSION}
     inst = sub.add_parser("نصب", help="پیکج نصب کریں | install packages")
     inst.add_argument("packages", nargs="+", metavar="پیکج", help="پیکج نام")
 
+    # ہٹائیں (remove/uninstall)
+    rem = sub.add_parser("ہٹائیں", help="پیکج ہٹائیں | uninstall packages")
+    rem.add_argument("packages", nargs="+", metavar="پیکج", help="پیکج نام")
+
+    # فہرست (list)
+    lst = sub.add_parser("فہرست", help="نصب شدہ پیکجز دکھائیں | list packages")
+    lst.add_argument("فلٹر", nargs="?", default="", help="نام میں تلاش")
+
+    # تازہ_کریں (update)
+    upd = sub.add_parser("تازہ_کریں", help="پیکج تازہ کریں | upgrade packages")
+    upd.add_argument("packages", nargs="+", metavar="پیکج", help="پیکج نام")
+
+    # ماحول (venv)
+    env = sub.add_parser("ماحول", help="ورچوئل ماحول | virtual environment")
+    env_sub = env.add_subparsers(dest="env_cmd")
+    env_create = env_sub.add_parser("بنائیں", help="نیا ماحول بنائیں")
+    env_create.add_argument("نام", nargs="?", default="ماحول", help="ماحول کا نام/راستہ")
+    env_act = env_sub.add_parser("چالو", help="ماحول چالو کرنے کا طریقہ دکھائیں")
+    env_act.add_argument("نام", nargs="?", default="ماحول", help="ماحول کا نام/راستہ")
+
     # version
     sub.add_parser("version", help="نسخہ اور ڈویلپر معلومات")
 
@@ -68,6 +97,14 @@ Version  : {VERSION}
     # format (stub)
     fmt = sub.add_parser("format", help="کوڈ فارمیٹ کریں (جلد آ رہا ہے)")
     fmt.add_argument("file")
+
+    # بورڈ (TensorBoard launcher)
+    brd = sub.add_parser("بورڈ", help="TensorBoard ڈیش بورڈ | launch TensorBoard")
+    brd_sub = brd.add_subparsers(dest="brd_cmd")
+    brd_run = brd_sub.add_parser("چلائیں", help="TensorBoard چلائیں")
+    brd_run.add_argument("فولڈر", nargs="?", default="logs", help="logs فولڈر (ڈیفالٹ: logs)")
+    brd_run.add_argument("--پورٹ", type=int, default=6006, help="پورٹ نمبر (ڈیفالٹ: 6006)")
+    brd_run.add_argument("--پس_منظر", action="store_true", help="پس منظر میں چلائیں")
 
     # مدد (help)
     mdad = sub.add_parser("مدد", help="مدد — زبان کے موضوعات، فنکشن، لائبریری")
@@ -143,6 +180,42 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "نصب":
         from .installer import install_packages
         return install_packages(args.packages)
+
+    if args.command == "ہٹائیں":
+        from .installer import remove_packages
+        return remove_packages(args.packages)
+
+    if args.command == "فہرست":
+        from .installer import list_packages
+        return list_packages(getattr(args, "فلٹر", ""))
+
+    if args.command == "تازہ_کریں":
+        from .installer import update_packages
+        return update_packages(args.packages)
+
+    if args.command == "ماحول":
+        from .installer import create_venv, activate_venv_info
+        env_cmd = getattr(args, "env_cmd", None)
+        نام = getattr(args, "نام", "ماحول")
+        if env_cmd == "بنائیں":
+            return create_venv(نام)
+        elif env_cmd == "چالو":
+            return activate_venv_info(نام)
+        else:
+            print("استعمال: urdu ماحول بنائیں [نام]  یا  urdu ماحول چالو [نام]")
+        return 0
+
+    if args.command == "بورڈ":
+        from .runtime.tensorboard_lib import بورڈ_چلائیں
+        brd_cmd = getattr(args, "brd_cmd", None)
+        if brd_cmd == "چلائیں":
+            فولڈر = getattr(args, "فولڈر", "logs")
+            پورٹ = getattr(args, "پورٹ", 6006)
+            پس_منظر = getattr(args, "پس_منظر", False)
+            return بورڈ_چلائیں(فولڈر, پورٹ=پورٹ, پس_منظر=پس_منظر)
+        else:
+            print("استعمال: urdu بورڈ چلائیں [فولڈر] [--پورٹ PORT]")
+        return 0
 
     if args.command == "check":
         path = Path(args.file)
