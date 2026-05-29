@@ -6,7 +6,7 @@
 ║  Developer : Mohammed Zahid Wadiwale                   ║
 ║  Version   : 1.0.1                                     ║
 ║  Platform  : Windows | Linux | macOS                   ║
-║  License   : MIT                                       ║
+║  License   : UPL-1.0                                   ║
 ╚══════════════════════════════════════════════════════╝
 """
 
@@ -30,7 +30,7 @@ def version_info() -> str:
         f"  Released  : {RELEASE_DATE}",
         "  Platform  : Windows | Linux | macOS",
         "  Features  : OOP | Async | GUI | ML | DB | Web | Threads | TensorBoard | Arduino | DataStructures | Algorithms | Text",
-        "  License   : MIT",
+        "  License   : UPL-1.0",
         line,
     ]
     return "\n".join(info)

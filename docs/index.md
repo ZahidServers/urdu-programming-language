@@ -36,10 +36,10 @@ The language was created to make programming genuinely accessible to Urdu-speaki
 **Mohammed Zahid Wadiwale**
 Developer and designer of the Urdu Programming Language.
 Version 1.0.1 — Released 2026-05-29
-License: MIT
+License: Urdu Programming Language License (UPL-1.0)
 
 > **اردو:** **محمد زاہد وڈیوالے** — اردو پروگرامنگ لینگویج کے ڈویلپر اور ڈیزائنر۔
-> ورژن 1.0.0 — جاری کردہ 2026-05-16 — لائسنس: MIT
+> ورژن 1.0.1 — جاری کردہ 2026-05-29 — لائسنس: UPL-1.0
 
 ---
 
@@ -75,9 +75,9 @@ License: MIT
 | **Smart errors** | "کیا آپ کا مطلب تھا؟" suggestions on `NameError` / `AttributeError` |
 | **Standalone EXE** | Compile to `urdu.exe` with Nuitka — no Python needed |
 | **Interactive REPL** | `python -m urdu repl` — live coding in Urdu |
-| **MIT license** | Free and open source |
+| **UPL-1.0 license** | Free and open source |
 
-> **اردو:** اوپر دی گئی جدول میں اردو پروگرامنگ لینگویج کی تمام اہم خصوصیات کا خلاصہ ہے — اردو کلیدی الفاظ سے لے کر ویب فریم ورک، ڈیٹا بیس، مشین لرننگ، GUI، فائل ہینڈلنگ اور سٹینڈ الون .exe بنانے تک سب کچھ شامل ہے۔ یہ زبان مکمل طور پر مفت اور اوپن سورس ہے (MIT لائسنس)۔
+> **اردو:** اوپر دی گئی جدول میں اردو پروگرامنگ لینگویج کی تمام اہم خصوصیات کا خلاصہ ہے — اردو کلیدی الفاظ سے لے کر ویب فریم ورک، ڈیٹا بیس، مشین لرننگ، GUI، فائل ہینڈلنگ اور سٹینڈ الون .exe بنانے تک سب کچھ شامل ہے۔ یہ زبان مکمل طور پر مفت اور اوپن سورس ہے (UPL-1.0 لائسنس)۔
 
 ---
 
@@ -223,4 +223,4 @@ All async constructs cause the script to be wrapped in
 
 ---
 
-*اردو پروگرامنگ لینگویج — MIT License — Mohammed Zahid Wadiwale*
+*اردو پروگرامنگ لینگویج — Urdu Programming Language License (UPL-1.0) — Mohammed Zahid Wadiwale*

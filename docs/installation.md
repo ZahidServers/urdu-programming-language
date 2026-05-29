@@ -240,7 +240,7 @@ Output:
   Released  : 2026-05-16
   Platform  : Windows | Linux | macOS
   Features  : OOP | Async | GUI | ML | DB | Web | Threads
-  License   : MIT
+  License   : UPL-1.0
 ════════════════════════════════════════════════════════
 ```
 

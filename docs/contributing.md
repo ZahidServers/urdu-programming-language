@@ -414,35 +414,17 @@ To prepare a release asset:
 
 ## License — لائسنس
 
-The Urdu Programming Language is released under the **MIT License**.
+The Urdu Programming Language is released under the **Urdu Programming Language License (UPL-1.0)**.
 
-> **اردو:** اردو پروگرامنگ زبان **MIT لائسنس** کے تحت جاری کی گئی ہے۔ تعاون کر کے آپ اتفاق کرتے ہیں کہ آپ کے تعاونات اسی MIT لائسنس کے تحت لائسنس ہوں گے۔
+> **اردو:** اردو پروگرامنگ زبان **UPL-1.0 لائسنس** کے تحت جاری کی گئی ہے۔ تعاون کر کے آپ اتفاق کرتے ہیں کہ آپ کے تعاونات اسی UPL-1.0 لائسنس کے تحت لائسنس ہوں گے۔
 
-```
-MIT License
+Key points of UPL-1.0:
 
-Copyright (c) 2026 Mohammed Zahid Wadiwale
+- **Programs you write** in the Urdu Programming Language are entirely yours — no attribution required, any license of your choice.
+- **The language source** (lexer, parser, transpiler, runtime, stdlib, docs) requires attribution to Mohammed Zahid Wadiwale if you fork or distribute it.
+- You may not claim to have created the original Urdu Programming Language or remove original author credits.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
-By contributing, you agree that your contributions will be licensed under the same MIT License.
+By contributing, you agree that your contributions will be included under the same UPL-1.0 License, with your contributor credit preserved in the project's git history.
 
 ---
 
