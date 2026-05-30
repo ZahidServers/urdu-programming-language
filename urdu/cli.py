@@ -124,6 +124,14 @@ def main(argv: list[str] | None = None) -> int:
             except Exception:
                 pass
 
+    # Reinstall Python's default SIGINT handler — Nuitka compiled binaries
+    # can suppress it, causing Ctrl+C to be ignored for web servers.
+    import signal
+    try:
+        signal.signal(signal.SIGINT, signal.default_int_handler)
+    except (OSError, ValueError):
+        pass
+
     parser = _build_parser()
     args = parser.parse_args(argv)
 

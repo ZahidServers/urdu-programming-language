@@ -220,11 +220,28 @@ class فاسٹ_اے_پی_آئی:
     def چلائیں(self, *, میزبان: str = "0.0.0.0", پورٹ: int = 8000,
                دوبارہ_لوڈ: bool = False):
         """Run the FastAPI server with uvicorn."""
+        import asyncio
         try:
             import uvicorn
         except ImportError:
             raise ImportError("pip install uvicorn")
-        uvicorn.run(self._app, host=میزبان, port=پورٹ, reload=دوبارہ_لوڈ)
+
+        async def _serve():
+            try:
+                config = uvicorn.Config(self._app, host=میزبان, port=پورٹ,
+                                        reload=دوبارہ_لوڈ)
+                await uvicorn.Server(config).serve()
+            except (KeyboardInterrupt, asyncio.CancelledError):
+                pass
+
+        try:
+            asyncio.get_running_loop()
+            return _serve()  # running inside async Urdu script — transpiler awaits this
+        except RuntimeError:
+            try:
+                uvicorn.run(self._app, host=میزبان, port=پورٹ, reload=دوبارہ_لوڈ)
+            except KeyboardInterrupt:
+                pass
 
     @property
     def ایپ(self):
@@ -493,7 +510,30 @@ class فلاسک:
 
     def چلائیں(self, *, میزبان: str = "0.0.0.0", پورٹ: int = 5000,
                ڈیبگ: bool = True, تھریڈ: bool = False, **kwargs):
-        self._app.run(host=میزبان, port=پورٹ, debug=ڈیبگ, threaded=تھریڈ, **kwargs)
+        import asyncio
+
+        def _run_sync():
+            try:
+                self._app.run(host=میزبان, port=پورٹ, debug=ڈیبگ,
+                              threaded=تھریڈ, use_reloader=False, **kwargs)
+            except KeyboardInterrupt:
+                pass
+
+        try:
+            asyncio.get_running_loop()
+
+            async def _serve():
+                try:
+                    import concurrent.futures
+                    loop = asyncio.get_event_loop()
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                        await loop.run_in_executor(pool, _run_sync)
+                except (KeyboardInterrupt, asyncio.CancelledError):
+                    pass
+
+            return _serve()
+        except RuntimeError:
+            _run_sync()
 
     @property
     def ایپ(self):
@@ -711,11 +751,33 @@ class ڈجانگو:
     def چلائیں(self, *, میزبان: str = "0.0.0.0", پورٹ: int = 8000,
                دوبارہ_لوڈ: bool = False):
         """Start Django server via werkzeug (no django.core.management needed)."""
+        import asyncio
         from django.core.handlers.wsgi import WSGIHandler
         from werkzeug.serving import run_simple
-        print(f" * Urdu/Django running on http://{میزبان}:{پورٹ}")
-        run_simple(میزبان, پورٹ, WSGIHandler(),
-                   use_reloader=دوبارہ_لوڈ, threaded=True)
+
+        def _run_sync():
+            print(f" * Urdu/Django running on http://{میزبان}:{پورٹ}")
+            try:
+                run_simple(میزبان, پورٹ, WSGIHandler(),
+                           use_reloader=دوبارہ_لوڈ, threaded=True)
+            except KeyboardInterrupt:
+                pass
+
+        try:
+            asyncio.get_running_loop()
+
+            async def _serve():
+                try:
+                    import concurrent.futures
+                    loop = asyncio.get_event_loop()
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                        await loop.run_in_executor(pool, _run_sync)
+                except (KeyboardInterrupt, asyncio.CancelledError):
+                    pass
+
+            return _serve()
+        except RuntimeError:
+            _run_sync()
 
 
 # ─── Django view helpers ──────────────────────────────────────────────────────
@@ -1109,13 +1171,50 @@ class ساکٹ_آئی_او:
 
     def چلائیں(self, ایپ=None, *, میزبان: str = "0.0.0.0", پورٹ: int = 8000):
         """Start the server — werkzeug for Flask/Django, uvicorn for FastAPI."""
+        import asyncio
         src = ایپ or self._ایپ
+
         if isinstance(src, (فلاسک, ڈجانگو)) or not self._is_async:
-            from werkzeug.serving import run_simple
-            run_simple(میزبان, پورٹ, self.wsgi_ایپ(src))
+            def _run_sync():
+                try:
+                    from werkzeug.serving import run_simple
+                    run_simple(میزبان, پورٹ, self.wsgi_ایپ(src))
+                except KeyboardInterrupt:
+                    pass
+
+            try:
+                asyncio.get_running_loop()
+
+                async def _serve_wsgi():
+                    try:
+                        import concurrent.futures
+                        loop = asyncio.get_event_loop()
+                        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                            await loop.run_in_executor(pool, _run_sync)
+                    except (KeyboardInterrupt, asyncio.CancelledError):
+                        pass
+
+                return _serve_wsgi()
+            except RuntimeError:
+                _run_sync()
         else:
-            import uvicorn
-            uvicorn.run(self.asgi_ایپ(src), host=میزبان, port=پورٹ)
+            async def _serve_asgi():
+                try:
+                    import uvicorn
+                    config = uvicorn.Config(self.asgi_ایپ(src), host=میزبان, port=پورٹ)
+                    await uvicorn.Server(config).serve()
+                except (KeyboardInterrupt, asyncio.CancelledError):
+                    pass
+
+            try:
+                asyncio.get_running_loop()
+                return _serve_asgi()
+            except RuntimeError:
+                try:
+                    import uvicorn
+                    uvicorn.run(self.asgi_ایپ(src), host=میزبان, port=پورٹ)
+                except KeyboardInterrupt:
+                    pass
 
     @property
     def سرور(self):
@@ -1199,17 +1298,26 @@ class ویب_آر_ٹی_سی:
         """Start the WebRTC signalling WebSocket server."""
         try:
             import websockets
-            import asyncio
         except ImportError:
             raise ImportError("pip install websockets")
         import asyncio, websockets
 
         async def _main():
-            async with websockets.serve(self._ہینڈل, self.میزبان, self.پورٹ):
-                print(f"✓ WebRTC سگنلنگ: ws://{self.میزبان}:{self.پورٹ}")
-                await asyncio.Future()
+            try:
+                async with websockets.serve(self._ہینڈل, self.میزبان, self.پورٹ):
+                    print(f"✓ WebRTC سگنلنگ: ws://{self.میزبان}:{self.پورٹ}")
+                    await asyncio.Future()
+            except (KeyboardInterrupt, asyncio.CancelledError):
+                pass
 
-        asyncio.run(_main())
+        try:
+            asyncio.get_running_loop()
+            return _main()
+        except RuntimeError:
+            try:
+                asyncio.run(_main())
+            except KeyboardInterrupt:
+                pass
 
 
 # ─── Basic WebSocket server ───────────────────────────────────────────────────
@@ -1250,9 +1358,9 @@ class ویب_ساکٹ:
     def چلائیں(self):
         try:
             import websockets
-            import asyncio
         except ImportError:
             raise ImportError("pip install websockets")
+        import asyncio, websockets
 
         async def _serve(ws, path=""):
             self._clients.add(ws)
@@ -1275,14 +1383,22 @@ class ویب_ساکٹ:
                     if asyncio.iscoroutine(r2):
                         await r2
 
-        import asyncio, websockets
-
         async def _main():
-            async with websockets.serve(_serve, self.میزبان, self.پورٹ):
-                print(f"✓ WebSocket: ws://{self.میزبان}:{self.پورٹ}")
-                await asyncio.Future()
+            try:
+                async with websockets.serve(_serve, self.میزبان, self.پورٹ):
+                    print(f"✓ WebSocket: ws://{self.میزبان}:{self.پورٹ}")
+                    await asyncio.Future()
+            except (KeyboardInterrupt, asyncio.CancelledError):
+                pass
 
-        asyncio.run(_main())
+        try:
+            asyncio.get_running_loop()
+            return _main()
+        except RuntimeError:
+            try:
+                asyncio.run(_main())
+            except KeyboardInterrupt:
+                pass
 
 
 # ─── HTTP client ─────────────────────────────────────────────────────────────

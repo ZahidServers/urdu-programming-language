@@ -282,7 +282,16 @@ This calls Django's schema editor to `CREATE TABLE IF NOT EXISTS` for each regis
 ایپ.چلائیں(پورٹ=8000);
 ```
 
-`ایپ.چلائیں(پورٹ=8000)` starts Django's development server via `execute_from_command_line`. It passes `--noreload` by default — this prevents the auto-reloader from spawning a child process (which would lose the in-process setup and break with single-file Urdu apps). Pass `دوبارہ_لوڈ=سچ` to re-enable the reloader for development.
+`ایپ.چلائیں(پورٹ=8000)` starts Django's WSGI server via werkzeug. Auto-reload is off by default; pass `دوبارہ_لوڈ=سچ` to enable it.
+
+> ⚠️ **Stopping the server:** `Ctrl+C` does not work — werkzeug's threaded mode keeps worker threads alive after the signal. Kill the process forcefully:
+>
+> ```
+> taskkill /F /IM urdu.exe        # CMD / PowerShell
+> Stop-Process -Name urdu -Force  # PowerShell
+> ```
+>
+> **اردو:** `Ctrl+C` سرور کو نہیں روکتا — اوپر دی گئی کمانڈ سے پروسیس ختم کریں۔
 
 ---
 

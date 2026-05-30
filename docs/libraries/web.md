@@ -60,6 +60,14 @@ The constructor config object accepts:
 
 `چلائیں` accepts: `میزبان` (host), `پورٹ` (port), `دوبارہ_لوڈ` (auto-reload).
 
+> **Ctrl+C support:** All `چلائیں()` methods across FastAPI, Flask, Django, WebSocket, Socket.IO, and WebRTC handle `KeyboardInterrupt` gracefully — pressing **Ctrl+C** in the terminal stops the server cleanly without a traceback.
+>
+> **اردو:** تمام سرور `چلائیں()` میتھڈز `KeyboardInterrupt` کو صاف طریقے سے سنبھالتے ہیں۔ ٹرمینل میں **Ctrl+C** دبانے سے سرور بغیر کسی خطا کے بند ہو جاتا ہے۔
+
+> **Async script compatibility:** If your Urdu script contains any `غیر_متزامن فنکشن` or `انتظار` keyword, the transpiler wraps the whole script in an `asyncio` event loop. All `چلائیں()` methods detect this automatically and run the server inside the existing loop instead of starting a new one — so mixing async route handlers with `ایپ.چلائیں()` works without any "event loop already running" error.
+>
+> **اردو:** اگر آپ کی اسکرپٹ میں `غیر_متزامن فنکشن` یا `انتظار` موجود ہو تو ٹرانسپائلر پوری اسکرپٹ کو `asyncio` لوپ میں لپیٹ دیتا ہے۔ تمام `چلائیں()` میتھڈز اسے خودبخود پہچانتے ہیں اور موجودہ لوپ کے اندر سرور چلاتے ہیں — "event loop already running" خطا نہیں آتی۔
+
 ---
 
 ### Route Decorators — راستہ ڈیکوریٹرز
@@ -676,6 +684,17 @@ Flask is a lightweight web framework suitable for simple web applications and AP
 ایپ.چلائیں({ پورٹ: 5000, ڈیبگ: سچ });
 ```
 
+**Stopping the server — سرور بند کرنا**
+
+> ⚠️ **Ctrl+C does not stop a Flask/werkzeug server** in threaded mode. Worker threads keep running after the signal. Kill the process from another terminal:
+>
+> ```
+> taskkill /F /IM urdu.exe        # CMD / PowerShell
+> Stop-Process -Name urdu -Force  # PowerShell
+> ```
+>
+> **اردو:** `Ctrl+C` Flask/werkzeug تھریڈڈ موڈ میں سرور کو نہیں روکتا۔ اوپر دی گئی کمانڈ سے پروسیس ختم کریں۔
+
 ---
 
 ### Flask Route Methods — Flask راستہ طریقے
@@ -1227,13 +1246,27 @@ All helpers return full Django ORM objects — every QuerySet method (`.count()`
 ایپ.چلائیں(پورٹ=8000)
 ```
 
-Starts Django's development WSGI server on the given port. Passes `--noreload` by default — this prevents the auto-reloader from spawning a child process (which would recreate the in-process state and break single-file apps). Re-enable with:
+Starts Django's development WSGI server via werkzeug on the given port. Auto-reload is disabled by default — re-enable with:
 
 ```urdu
 ایپ.چلائیں(پورٹ=8000, دوبارہ_لوڈ=سچ)
 ```
 
-> **اردو:** `ایپ.چلائیں()` بطور ڈیفالٹ `--noreload` پاس کرتا ہے — یہ ضروری ہے کیونکہ آٹو ری لوڈر چائلڈ پروسیس بناتا ہے جو `اردو/ویب` کے اندرونی ترتیب کو توڑ دیتا ہے۔
+> **اردو:** `ایپ.چلائیں()` werkzeug کے ذریعے Django WSGI سرور چلاتا ہے۔ بطور ڈیفالٹ آٹو ری لوڈ بند ہے۔
+
+**Stopping the server — سرور بند کرنا**
+
+> ⚠️ **Ctrl+C does not stop a Django/werkzeug server** in threaded mode. The worker threads keep running even after the signal. To force-stop it, kill the process from another terminal:
+>
+> ```
+> # Windows (PowerShell or CMD)
+> taskkill /F /IM urdu.exe
+>
+> # or from PowerShell
+> Stop-Process -Name urdu -Force
+> ```
+>
+> **اردو:** `Ctrl+C` werkzeug تھریڈڈ موڈ میں سرور کو نہیں روکتا — تھریڈ چلتے رہتے ہیں۔ سرور بند کرنے کے لیے اوپر دی گئی کمانڈ استعمال کریں۔
 
 ---
 

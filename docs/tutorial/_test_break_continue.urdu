@@ -1,0 +1,33 @@
+// Test break and continue in various contexts
+
+// Break in for loop
+لکھو("=== break in for ===");
+کے_لیے (متغیر i میں حد(10)) {
+    اگر (i == 5) { ٹوٹنا; }
+    لکھو(i);
+}
+
+// Continue in for loop
+لکھو("=== continue in for ===");
+کے_لیے (متغیر i میں حد(10)) {
+    اگر (i % 2 == 0) { جاری; }
+    لکھو(i);
+}
+
+// Break in while
+لکھو("=== break in while ===");
+متغیر ن = 0;
+جبکہ (سچ) {
+    لکھو(ن);
+    ن += 1;
+    اگر (ن == 4) { ٹوٹنا; }
+}
+
+// Continue in while
+لکھو("=== continue in while ===");
+متغیر م = 0;
+جبکہ (م < 8) {
+    م += 1;
+    اگر (م % 3 == 0) { جاری; }
+    لکھو(م);
+}

@@ -130,6 +130,9 @@ class UrduCompiler:
             exec(code_obj, ns)
         except SystemExit as e:
             exit_code = e.code or 0
+        except KeyboardInterrupt:
+            print("\n^C — بند کیا گیا", file=sys.stderr)
+            exit_code = 0
         except Exception as e:
             import traceback, re as _re
             tb_str = traceback.format_exc()

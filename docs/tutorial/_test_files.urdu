@@ -1,0 +1,22 @@
+درآمد { فائل_لکھو, فائل_پڑھو, فائل_موجود, فائل_شامل, فائل_حذف } سے "اردو/فائلیں";
+
+// Write a file
+فائل_لکھو("docs/tutorial/_test_out.txt", "السلام علیکم\nیہ پہلی لائن\nیہ دوسری لائن");
+لکھو("لکھا گیا");
+
+// Check exists
+لکھو(فائل_موجود("docs/tutorial/_test_out.txt"));
+لکھو(فائل_موجود("does_not_exist.txt"));
+
+// Read the file
+متغیر مواد = فائل_پڑھو("docs/tutorial/_test_out.txt");
+لکھو(مواد);
+
+// Append
+فائل_شامل("docs/tutorial/_test_out.txt", "\nنئی لائن");
+متغیر مواد2 = فائل_پڑھو("docs/tutorial/_test_out.txt");
+لکھو(مواد2);
+
+// Delete
+فائل_حذف("docs/tutorial/_test_out.txt");
+لکھو(فائل_موجود("docs/tutorial/_test_out.txt"));

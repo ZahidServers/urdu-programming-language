@@ -50,10 +50,11 @@ asyncio ٹیسٹ...
 
 ```urdu
 لکھو("شروع");
-لکھو("sys درآمد...");
-درآمد { چلائیں_پائیتھن } سے "اردو/پل";
+لکھو("ctypes درآمد...");
+درآمد * بطور ctypes سے "ctypes";
 لکھو("چلا رہے ہیں...");
-چلائیں_پائیتھن("import ctypes; print('ctypes ok:', ctypes.__version__)");
+متغیر val = ctypes.c_int(42);
+لکھو(`ctypes c_int: ${val.value}`);
 لکھو("ختم");
 ```
 
@@ -62,13 +63,14 @@ asyncio ٹیسٹ...
 | Line | Code | What it does |
 |------|------|--------------|
 | 1 | `لکھو("شروع")` | Start marker — confirms the script begins executing. |
-| 2 | `لکھو("sys درآمد...")` | Checkpoint before the import. |
-| 3 | `درآمد { چلائیں_پائیتھن } سے "اردو/پل"` | Imports `چلائیں_پائیتھن` (run-Python helper) from `اردو/پل`. This module exposes `exec()` and `eval()` in a controlled way for direct Python evaluation inside an Urdu program. |
-| 4 | `لکھو("چلا رہے ہیں...")` | Checkpoint before the `ctypes` test. |
-| 5 | `چلائیں_پائیتھن("import ctypes; print('ctypes ok:', ctypes.__version__)")` | Runs a raw Python string via `exec()`. Imports `ctypes` (the C foreign function library) and prints its version. In a Nuitka build this requires `_ctypes.pyd` and `libffi` to be present. If this line fails, ctypes is missing from the bundle. |
-| 6 | `لکھو("ختم")` | Prints only if `چلائیں_پائیتھن` did not raise an exception. |
+| 2 | `لکھو("ctypes درآمد...")` | Checkpoint before the import. |
+| 3 | `درآمد * بطور ctypes سے "ctypes"` | Imports the `ctypes` module directly using the Urdu `درآمد * بطور` syntax. In a Nuitka build this requires `_ctypes.pyd` and the `libffi` DLL to be present in the bundle. |
+| 4 | `لکھو("چلا رہے ہیں...")` | Checkpoint — confirms the import succeeded. |
+| 5 | `متغیر val = ctypes.c_int(42)` | Creates a C integer with value 42. This exercises the ctypes C type system. |
+| 6 | `` لکھو(`ctypes c_int: ${val.value}`) `` | Reads back the integer value via `.value`. Prints `ctypes c_int: 42` if ctypes is working correctly. |
+| 7 | `لکھو("ختم")` | End marker — confirms the script completed without error. |
 
-> **اردو:** یہ اسکرپٹ `ctypes` ماڈیول کو براہ راست پائتھن کوڈ کے ذریعے آزماتا ہے۔ `ctypes.__version__` کامیابی سے پرنٹ ہونا اس بات کی تصدیق کرتا ہے کہ C فارن فنکشن لائبریری بنڈل میں موجود ہے۔
+> **اردو:** یہ اسکرپٹ `ctypes` ماڈیول کو براہ راست درآمد کر کے C عدد صحیح بناتا ہے۔ `ctypes c_int: 42` کا پرنٹ ہونا اس بات کی تصدیق کرتا ہے کہ C فارن فنکشن لائبریری بنڈل میں موجود ہے۔
 
 **How to run:**
 
@@ -80,9 +82,9 @@ urdu run examples/test_ctypes2.urdu
 
 ```
 شروع
-sys درآمد...
+ctypes درآمد...
 چلا رہے ہیں...
-ctypes ok: <version>
+ctypes c_int: 42
 ختم
 ```
 

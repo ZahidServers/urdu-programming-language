@@ -1,0 +1,35 @@
+// Test comparison operators
+لکھو(5 == 5);     // True
+لکھو(5 == 6);     // False
+لکھو(5 != 6);     // True
+لکھو(5 < 10);     // True
+لکھو(5 > 10);     // False
+لکھو(5 <= 5);     // True
+لکھو(5 >= 6);     // False
+
+// Logical operators اردو style
+لکھو(سچ اور سچ);     // True
+لکھو(سچ اور جھوٹ);   // False
+لکھو(جھوٹ یا سچ);    // True
+لکھو(نہیں سچ);        // False
+لکھو(نہیں جھوٹ);     // True
+
+// Logical operators symbol style
+لکھو(سچ && سچ);      // True
+لکھو(سچ && جھوٹ);    // False
+لکھو(جھوٹ || سچ);    // True
+لکھو(!سچ);            // False
+
+// Chain comparisons
+متغیر ن = 15;
+لکھو(10 < ن && ن < 20);    // True
+لکھو(ن > 10 اور ن < 20);   // True
+
+// String comparison
+لکھو("احمد" == "احمد");   // True
+لکھو("ا" < "ب");           // True (lexicographic)
+
+// Ternary
+متغیر عمر = 20;
+متغیر نتیجہ = عمر >= 18 ? "بالغ" : "نابالغ";
+لکھو(نتیجہ);    // بالغ

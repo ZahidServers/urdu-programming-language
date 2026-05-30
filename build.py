@@ -39,6 +39,8 @@ HERE = Path(__file__).parent
 ICO          = HERE / "URDU_ICO.ico"
 ANACONDA_BIN = Path(r"C:\ProgramData\anaconda3\Library\bin")
 VCRUNTIME    = Path(r"C:\Windows\System32\vcruntime140_threads.dll")
+TCL_LIB_SRC  = Path(r"C:\ProgramData\anaconda3\Library\lib\tcl8.6")
+TK_LIB_SRC   = Path(r"C:\ProgramData\anaconda3\Library\lib\tk8.6")
 
 
 # ─── Fix stdout for Urdu output on Windows ───────────────────────────────────
@@ -112,6 +114,7 @@ EMBEDDED = {
 DB = {
     "psycopg2":       "psycopg2 (PostgreSQL)",
     "pymysql":        "PyMySQL",               # optional
+    "mysql":          "mysql-connector-python", # mysql.connector namespace
     "pymongo":        "PyMongo",
     "firebase_admin": "Firebase Admin",         # optional
     "cassandra":      "Cassandra Driver",       # optional
@@ -122,6 +125,7 @@ DB = {
 CRYPTO = {
     "cryptography": "cryptography",
     "Crypto":       "PyCryptodome",            # installed as Crypto
+    "bcrypt":       "bcrypt",
 }
 
 ML = {
@@ -209,6 +213,20 @@ def _post_build(exe: Path, standalone: bool) -> None:
     else:
         print(f"  ⚠ vcruntime140_threads.dll نہیں ملا: {VCRUNTIME}")
 
+    # 3. Tcl/Tk script libraries (required by tkinter/GUI)
+    #    tcl86t.dll in dist_folder looks for ../lib/tcl8.6 — so we copy to
+    #    dist_folder's parent (dist/) under lib/
+    lib_dir = dist_folder.parent / "lib"
+    for src, name in [(TCL_LIB_SRC, "tcl8.6"), (TK_LIB_SRC, "tk8.6")]:
+        dest = lib_dir / name
+        if src.is_dir():
+            if dest.exists():
+                shutil.rmtree(dest)
+            shutil.copytree(src, dest)
+            print(f"  {name} کاپی           : ✓  →  {dest}")
+        else:
+            print(f"  ⚠ {name} نہیں ملا: {src}")
+
 
 # ─── Build ────────────────────────────────────────────────────────────────────
 
@@ -264,7 +282,9 @@ def build(fast: bool = False, onefile: bool = False,
         # disable anti-bloat plugin to avoid DLL init failure on Windows when
         # the plugin evaluates torch.utils._config_module at compile time
         "--nofollow-import-to=torch.testing._internal",
-        "--nofollow-import-to=django.core.management",
+        # mysql-connector-python's C extension (_cmysql) causes a segfault in
+        # Nuitka binaries; excluding it forces the pure-Python fallback instead
+        "--nofollow-import-to=mysql.connector._cmysql",
         "--disable-plugin=anti-bloat",
         "--include-package=ctypes",
         "--include-module=_ctypes",
@@ -275,6 +295,10 @@ def build(fast: bool = False, onefile: bool = False,
         r"--include-data-file=C:\ProgramData\anaconda3\Library\bin\sqlite3.dll=sqlite3.dll",
         "--include-module=ssl",
         "--include-module=hashlib",
+        # mysql-connector-python loads plugins and locales dynamically
+        "--include-module=mysql.connector.plugins.mysql_native_password",
+        "--include-module=mysql.connector.plugins.caching_sha2_password",
+        "--include-package=mysql.connector.locales",
         # Nuitka 2.3.9 does NOT support wildcard for --include-distribution-metadata.
         # List only packages that call importlib.metadata/importlib_metadata at
         # runtime and need their dist-info present in the bundle:

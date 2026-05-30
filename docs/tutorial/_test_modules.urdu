@@ -1,0 +1,11 @@
+// Test import syntax
+درآمد { تاریخ } سے "اردو/تاریخ";
+متغیر آج = تاریخ.آج();
+لکھو(آج.سال);
+
+// Import math (it's a global but test درآمد * style)
+لکھو(ریاضی.پائی);
+
+// Test module as alias
+درآمد * بطور ر سے "ریاضی";
+لکھو(ر.پائی);

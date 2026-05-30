@@ -220,6 +220,19 @@ examples/FLASK_BLOG_App/
 
 ---
 
+## Stopping the Server — سرور بند کرنا
+
+> ⚠️ **Ctrl+C does not stop this server.** Flask/werkzeug's threaded mode keeps worker threads alive after the signal. Kill the process from another terminal:
+>
+> ```
+> taskkill /F /IM urdu.exe        # CMD / PowerShell
+> Stop-Process -Name urdu -Force  # PowerShell
+> ```
+>
+> **اردو:** `Ctrl+C` Flask/werkzeug تھریڈڈ موڈ میں سرور نہیں روکتا — اوپر دی گئی کمانڈ استعمال کریں۔
+
+---
+
 ## Known Limitations
 
 | Limitation | Reason | Workaround |

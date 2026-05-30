@@ -395,4 +395,17 @@ A real-time chat server where multiple browser clients can send and receive mess
 
 ---
 
+## Stopping the Server — سرور بند کرنا
+
+> ⚠️ **Ctrl+C does not stop these servers.** uvicorn keeps running after the signal. Kill the process from another terminal:
+>
+> ```
+> taskkill /F /IM urdu.exe        # CMD / PowerShell
+> Stop-Process -Name urdu -Force  # PowerShell
+> ```
+>
+> **اردو:** `Ctrl+C` uvicorn سرور نہیں روکتا — اوپر دی گئی کمانڈ استعمال کریں۔
+
+---
+
 *Previous: [Hello World →](hello-world.md) | Next: [Data Analysis →](data-analysis.md)*

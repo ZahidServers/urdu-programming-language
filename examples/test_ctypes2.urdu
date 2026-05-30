@@ -1,6 +1,7 @@
 لکھو("شروع");
-لکھو("sys درآمد...");
-درآمد { چلائیں_پائیتھن } سے "اردو/پل";
+لکھو("ctypes درآمد...");
+درآمد * بطور ctypes سے "ctypes";
 لکھو("چلا رہے ہیں...");
-چلائیں_پائیتھن("import ctypes; print('ctypes ok:', ctypes.__version__)");
+متغیر val = ctypes.c_int(42);
+لکھو(`ctypes c_int: ${val.value}`);
 لکھو("ختم");

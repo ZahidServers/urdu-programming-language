@@ -6,6 +6,14 @@ Complete, runnable program examples for the Urdu Programming Language. Every exa
 
 ---
 
+## GUI Desktop Applications — گرافیکی ڈیسک ٹاپ ایپلیکیشنز
+
+| Example | Description | Source |
+|---------|-------------|--------|
+| [GUI Examples](gui-examples.md) | 13 desktop apps: calculators, games, billing systems (SQLite/MySQL/PostgreSQL/Cassandra/MongoDB), website downloader, text browser, crypto tool | `GUI/01–13/` |
+
+---
+
 ## Getting Started — شروع کرنا
 
 | Example | Description | Source |
