@@ -509,4 +509,4 @@ This program reads a student's name and exam marks, calculates a grade, and prin
 > - **لائبریریاں** — ویب سرورز، ڈیٹا بیسز، ML، رمزنگاری اور مزید
 > - **مثالیں** — مکمل حقیقی دنیا کے پروگرام
 
-*Previous: [Installation](installation.md) | Next: [Syntax Reference →](syntax/)*
+*Previous: [Installation](installation.md) | Next: [Syntax Reference →](syntax/index.md)*

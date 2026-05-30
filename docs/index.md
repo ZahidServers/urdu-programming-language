@@ -193,7 +193,8 @@ All async constructs cause the script to be wrapped in
 |---|---|
 | [Installation](installation.md) | System requirements, setup, CLI reference |
 | [Quick Start](quick-start.md) | Your first programs, variables, loops, functions |
-| [Syntax Reference](syntax/) | Complete language syntax — keywords, operators, OOP |
+| [Tutorial](tutorial/index.md) | Guided step-by-step learning — beginner, intermediate, and advanced levels |
+| [Syntax Reference](syntax/index.md) | Complete language syntax — keywords, operators, OOP |
 | [Built-ins](builtins/) | `لکھو`، `پڑھو`، `لمبائی`، `قسم` and all built-in functions |
 | [Libraries](libraries/) | Each standard library module documented in full |
 | [Examples](examples/) | Real programs: web server, Django/Flask/FastAPI apps, ML model, billing system, chat |
@@ -207,7 +208,8 @@ All async constructs cause the script to be wrapped in
 ## Quick Navigation — فوری رہنمائی
 
 - **New to the language?** Start with [Installation](installation.md), then [Quick Start](quick-start.md).
-- **Looking for a specific keyword?** See the [Syntax Reference](syntax/).
+- **Learning step by step?** Follow the [Tutorial](tutorial/index.md) — beginner through advanced.
+- **Looking for a specific keyword?** See the [Syntax Reference](syntax/index.md).
 - **Need a built-in function?** See [Built-ins](builtins/).
 - **Building a web app?** See [Libraries → ویب](libraries/web.md).
 - **Compiling to an .exe?** See [Building](building.md).
@@ -215,6 +217,7 @@ All async constructs cause the script to be wrapped in
 
 > **اردو:**
 > - **زبان میں نئے ہیں؟** انسٹالیشن سے شروع کریں، پھر فوری آغاز پڑھیں۔
+> - **قدم بہ قدم سیکھنا ہے؟** ٹیوٹوریل فالو کریں — مبتدی سے ماہر تک۔
 > - **کوئی خاص کلیدی لفظ ڈھونڈ رہے ہیں؟** نحو کا حوالہ دیکھیں۔
 > - **بلٹ-ان فنکشن چاہیے؟** بلٹ-انز کا صفحہ دیکھیں۔
 > - **ویب ایپ بنانی ہے؟** ویب لائبریری دیکھیں۔

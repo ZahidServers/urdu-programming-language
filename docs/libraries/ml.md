@@ -1,4 +1,4 @@
-# Machine Learning Library — اردو/ذہین
+﻿# Machine Learning Library — اردو/ذہین
 
 The `اردو/ذہین` library brings the full Python ML ecosystem — Pandas, NumPy, TensorFlow/Keras, Scikit-learn, and local LLMs — into the Urdu Programming Language with Urdu-named constructors and methods.
 
@@ -598,4 +598,4 @@ Run local large language models (GGUF format via llama.cpp) directly from Urdu c
 
 ---
 
-*Next: [HTTP Client →](http.md)*
+*Previous: [Database →](database.md) | Next: [HTTP Client →](http.md)*

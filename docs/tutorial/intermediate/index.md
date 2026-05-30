@@ -18,7 +18,7 @@ This section builds on beginner fundamentals. You will learn the standard librar
 | [03](03-objects.md) | Objects in Depth | اشیاء | ~20 min |
 | [04](04-array-methods.md) | Array Methods | فہرست طریقے | ~25 min |
 | [05](05-string-methods.md) | String Methods | متن کے طریقے | ~20 min |
-| [06](06-classes-basics.md) | Classes & OOP | کلاسز | ~25 min |
+| [06](06-classes.md) | Classes & OOP | کلاسز | ~25 min |
 | [07](07-inheritance.md) | Inheritance | وراثت | ~25 min |
 | [08](08-error-handling.md) | Error Handling | غلطی سنبھالنا | ~20 min |
 | [09](09-modules.md) | Modules & Imports | ماڈیولز | ~20 min |

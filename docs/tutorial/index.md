@@ -48,20 +48,20 @@ Each page follows the same format:
 | # | Page | Topics |
 |---|------|--------|
 | 1 | [Advanced Functions](intermediate/01-functions-advanced.md) | Default params, rest params, closures, higher-order |
-| 2 | [Arrays in Depth](intermediate/02-arrays.md) | Creation, indexing, built-in array functions |
+| 2 | [Arrays in Depth](intermediate/02-lists-arrays.md) | Creation, indexing, built-in array functions |
 | 3 | [Objects in Depth](intermediate/03-objects.md) | Key-value pairs, access, `Object.*` helpers |
 | 4 | [Array Methods](intermediate/04-array-methods.md) | `نقشہ`, `فلٹر`, `ترتیب`, `ریورس`, `مجموع` |
 | 5 | [String Methods](intermediate/05-string-methods.md) | `.چھاٹو()`, `.بدلو()`, `.شامل_ہے()`, `ربط()`, `تقسیم()` and more |
-| 6 | [Classes & OOP](intermediate/06-classes-basics.md) | `کلاس`, `تعمیر`, `یہ`, `نیا`, instance methods |
+| 6 | [Classes & OOP](intermediate/06-classes.md) | `کلاس`, `تعمیر`, `یہ`, `نیا`, instance methods |
 | 7 | [Inheritance](intermediate/07-inheritance.md) | `توسیع`, `سپر`, method overriding, `نمونہ()` |
 | 8 | [Error Handling](intermediate/08-error-handling.md) | `کوشش`, `پکڑو`, `آخر`, `پھینکو`, error types |
-| 9 | [Modules & Imports](intermediate/09-modules-imports.md) | `درآمد`, `سے`, `بطور`, `برآمد`, `اردو/*` |
-| 10 | [File Operations](intermediate/10-files.md) | `اردو/فائلیں` — text, CSV, Excel, ZIP |
-| 11 | [Date & Time](intermediate/11-date-time.md) | `اردو/تاریخ` — `تاریخ`, `وقت`, `مدت`, `ہجری` |
-| 12 | [Math Built-ins](intermediate/12-math-builtins.md) | `مطلق`, `گول`, `طاقت`, `math` module |
-| 13 | [Threading](intermediate/13-threading.md) | `اردو/دھاگہ` — threads, pools, async runner |
-| 14 | [Working with JSON](intermediate/14-json.md) | `JSON_لکھو`, `JSON_پڑھو`, nested data |
-| 15 | [Type Conversion](intermediate/15-type-conversion.md) | `عدد`, `اعشاریہ`, `متن`, `بولین`, `قسم` |
+| 9 | [Modules & Imports](intermediate/09-modules.md) | `درآمد`, `سے`, `بطور`, `برآمد`, `اردو/*` |
+| 10 | [File Operations](intermediate/10-file-io.md) | `اردو/فائلیں` — text, CSV, Excel, ZIP |
+| 11 | [Date & Time](intermediate/11-datetime.md) | `اردو/تاریخ` — `تاریخ`, `وقت`, `مدت`, `ہجری` |
+| 12 | [Math Built-ins](intermediate/12-math.md) | `مطلق`, `گول`, `طاقت`, `math` module |
+| 13 | [Working with JSON](intermediate/13-json.md) | `JSON_لکھو`, `JSON_پڑھو`, nested data |
+| 14 | [Type Conversion](intermediate/14-type-conversion.md) | `عدد`, `اعشاریہ`, `متن`, `بولین`, `قسم` |
+| 15 | [Threading](intermediate/15-threading.md) | `اردو/دھاگہ` — threads, pools, async runner |
 
 ---
 

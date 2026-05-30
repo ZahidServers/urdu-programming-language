@@ -1,4 +1,4 @@
-# Threading Library — اردو/دھاگہ
+﻿# Threading Library — اردو/دھاگہ
 
 The `اردو/دھاگہ` library provides threads, thread/process pools, locks, and events for concurrent programming in Urdu.
 
@@ -474,4 +474,4 @@ Thread synchronisation via signal/wait.
 
 ---
 
-*Previous: [Logging →](logging.md)*
+*Previous: [Logging →](logging.md) | Next: [Library Index ↑](index.md)*

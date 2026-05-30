@@ -84,6 +84,11 @@ nav:
     - Logging: libraries/logging.md
     - Date & Time: libraries/datetime.md
     - Threading: libraries/threading.md
+    - Data Structures: libraries/structures.md
+    - Algorithms: libraries/algorithms.md
+    - Text Utilities: libraries/text.md
+    - Arduino / Embedded: libraries/arduino.md
+    - TensorBoard: libraries/tensorboard.md
 
   - Reference:
     - Keywords: reference/keywords.md
@@ -91,6 +96,7 @@ nav:
 
   - Examples:
     - Overview: examples/index.md
+    - GUI Desktop Apps: examples/gui-examples.md
     - Hello World: examples/hello-world.md
     - Web Server: examples/web-server.md
     - FastAPI Socket Chat: examples/fastapi-socket-chat.md
@@ -98,9 +104,59 @@ nav:
     - Flask Billing: examples/flask-billing.md
     - Flask MySQL Books: examples/flask-mysql-books.md
     - Django Calculator: examples/django-calc.md
+    - Django Kitabistan: examples/django-kitabistan.md
     - Data Analysis: examples/data-analysis.md
     - Web Scraping: examples/web-scraping.md
     - Diagnostic Scripts: examples/diagnostic-scripts.md
+
+  - Tutorial:
+    - Overview: tutorial/index.md
+    - Beginner:
+      - Overview: tutorial/beginner/index.md
+      - Welcome & Overview: tutorial/beginner/01-welcome.md
+      - Installation: tutorial/beginner/02-installation.md
+      - Hello World: tutorial/beginner/03-hello-world.md
+      - Variables: tutorial/beginner/04-variables.md
+      - Data Types: tutorial/beginner/05-data-types.md
+      - Input & Output: tutorial/beginner/06-input-output.md
+      - Strings: tutorial/beginner/07-strings.md
+      - Arithmetic Operators: tutorial/beginner/08-operators-arithmetic.md
+      - Comparison & Logical: tutorial/beginner/09-operators-comparison.md
+      - If / Else: tutorial/beginner/10-if-else.md
+      - Switch / Case: tutorial/beginner/11-switch-case.md
+      - While Loop: tutorial/beginner/12-while-loop.md
+      - For Loop: tutorial/beginner/13-for-loop.md
+      - Break & Continue: tutorial/beginner/14-break-continue.md
+      - Functions Basics: tutorial/beginner/15-functions-basics.md
+    - Intermediate:
+      - Overview: tutorial/intermediate/index.md
+      - Advanced Functions: tutorial/intermediate/01-functions-advanced.md
+      - Arrays in Depth: tutorial/intermediate/02-lists-arrays.md
+      - Objects in Depth: tutorial/intermediate/03-objects.md
+      - Array Methods: tutorial/intermediate/04-array-methods.md
+      - String Methods: tutorial/intermediate/05-string-methods.md
+      - Classes & OOP: tutorial/intermediate/06-classes.md
+      - Inheritance: tutorial/intermediate/07-inheritance.md
+      - Error Handling: tutorial/intermediate/08-error-handling.md
+      - Modules & Imports: tutorial/intermediate/09-modules.md
+      - File Operations: tutorial/intermediate/10-file-io.md
+      - Date & Time: tutorial/intermediate/11-datetime.md
+      - Math Built-ins: tutorial/intermediate/12-math.md
+      - Working with JSON: tutorial/intermediate/13-json.md
+      - Type Conversion: tutorial/intermediate/14-type-conversion.md
+      - Threading: tutorial/intermediate/15-threading.md
+    - Advanced:
+      - Overview: tutorial/advanced/index.md
+      - Data Structures: tutorial/advanced/01-data-structures.md
+      - Algorithms: tutorial/advanced/02-algorithms.md
+      - HTTP Client: tutorial/advanced/03-http-client.md
+      - Cryptography: tutorial/advanced/04-cryptography.md
+      - Databases: tutorial/advanced/05-databases.md
+      - GUI Applications: tutorial/advanced/06-gui.md
+      - Web Framework: tutorial/advanced/07-web-framework.md
+      - Machine Learning: tutorial/advanced/08-ml.md
+      - Text Processing: tutorial/advanced/09-text-processing.md
+      - Web Scraping: tutorial/advanced/10-web-scraping.md
 
   - Building urdu.exe: building.md
   - Contributing: contributing.md
